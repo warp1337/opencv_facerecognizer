@@ -21,7 +21,7 @@ def detect_face(image, face_cascade, return_image=False):
 
     min_size = (20, 20)
     haar_scale = 1.1
-    min_neighbors = 3
+    min_neighbors = 5
     haar_flags = 0
 
     # Equalize the histogram
@@ -77,28 +77,28 @@ def img_crop(image, crop_box, box_scale=1):
     return image.crop(pil_box)
 
 
-def face_crop(image_pattern, prefix, box_scale=1):
+def face_crop(image_pattern, prefix, haar, box_scale=1):
     # Select one of the haarcascade files:
     #  haarcascade_frontalface_alt.xml
     #  haarcascade_frontalface_alt2.xml
     #  haarcascade_frontalface_alt_tree.xml
     #  haarcascade_frontalface_default.xml
     #  haarcascade_profileface.xml
-    face_cascade = cv.Load('haar/haarcascade_frontalface_alt.xml')
+    face_cascade = cv.Load(haar)
 
     img_list = glob.glob(image_pattern)
     if len(img_list) <= 0:
         print '>> No Images Found'
         return
 
-    img_count = 1
+    img_count = 0
 
     for img in img_list:
         pil_im = Image.open(img)
         cv_im = pil2_cvgrey(pil_im)
         faces = detect_face(cv_im, face_cascade)
         if faces:
-            n = 1
+            n = 0
             for face in faces:
                 cropped_image = img_crop(pil_im, face[0], box_scale=box_scale)
                 f_name, ext = os.path.splitext(img)
@@ -118,21 +118,21 @@ def face_crop(image_pattern, prefix, box_scale=1):
 
                 print ">> Saving cropped image " + cropped_folder + '/' + prefix + "_crop" + str(img_count) + ext
                 n += 1
+                img_count += 1
         else:
             print '>> No faces found in image ', img
-
-        img_count += 1
 
 
 # Crop all jpegs in a folder. Note: the code uses glob which follows unix shell rules.
 # Use the box_scale to scale the cropping area. 1=opencv box, 2=2x the width and height
 if __name__ == '__main__':
-    if not len(sys.argv) > 2:
+    if not len(sys.argv) > 3:
         print ">> USAGE: face_cropper.py <name prefix> </path/to/images> "
         sys.exit(1)
     else:
         prefix = sys.argv[1]
         folder = sys.argv[2]
+        haar   = sys.argv[3]
         path = folder + '/*.jpg'
         print ">> Loading all images in path " + path
-        face_crop(path, prefix, box_scale=1)
+        face_crop(path, prefix, haar, box_scale=1)
