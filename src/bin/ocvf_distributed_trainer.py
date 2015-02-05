@@ -184,6 +184,8 @@ class Trainer(object):
         print "run dos run...\n"
         self.middleware.activate(self.image_source, self.retrain_source, self.restart_target)
 
+        self.re_train()
+
         while self.doRun:
             # blocking
             try:
@@ -194,7 +196,7 @@ class Trainer(object):
             try:
                 print "Training for '%s' (run %d)" % (train_name, self.counter)
                 self.record_images(train_name)
-                self.re_train(train_name)
+                self.re_train()
                 self.restart_classifier()
                 self.counter += 1
                 print "\n"
@@ -217,7 +219,7 @@ class Trainer(object):
             im = Image.fromarray(cv2.cvtColor(input_image, cv2.COLOR_BGR2RGB))
             im.save(os.path.join(person_image_path, "%03d.jpg" % i))
 
-    def re_train(self, train_name):
+    def re_train(self):
         print ">> Re-train running ..."
         [images, labels, subject_names] = self.read_images(self.training_data_path, self.image_size)
         # Zip us a {label, name} dict from the given data:
