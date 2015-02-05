@@ -125,8 +125,8 @@ LICENSE
 -------------
 
 
-    Copyright (c) 2012. Philipp
-    Wagner <bytefish[at]gmx[dot]de>
+    Copyright (c) 2012.
+    Philipp Wagner <bytefish[at]gmx[dot]de>
     Norman Koester <nkoester[at]techfak.uni-bielefeld.de>
     Florian Lier <flier[at]techfak.uni-bielefeld.de>
 
