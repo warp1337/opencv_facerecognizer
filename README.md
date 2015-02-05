@@ -21,6 +21,13 @@ please consult [4][5].
 Installation
 -------------
 
+Minimal Dependencies:
+
+    sudo apt-get install python-dev python python-scipy python-imaging-* python-opencv python-setuptools
+
+The most basic application, **ocvf_recognizer.py** will work without ROS or RSB. However, if you want to
+make use of message passing and RPC calls, and thus a distributed system, please install the following:
+
 Dependencies ROS (Indigo):
 
     sudo apt-get ros-indigo-desktop ros-indigo-people-msgs ros-indigo-usb-cam
@@ -32,7 +39,6 @@ Dependencies ROS (Groovy):
 Hint: You might save some disk space by installing ros-[indigo|groovy]-base. We haven't actually
 checked if it contains all the required packages. If you are familiar with ROS you may install
 missing packages manually.
-
 
 Dependencies RSB:
 
@@ -74,7 +80,7 @@ Save these files in separate folders like:
         │   ├── ...
 
 
-Now invoke the face_cropper.py tool that resides in the tools folder.
+Now invoke the **face_cropper.py** tool that resides in the tools folder.
 
     python face_cropper.py <label> </path/to/images> <haarcascade.file>
     python face_cropper.py Adam_Sandler /tmp/selected/adam_sandler /homes/flier/dev/ocvfacerec/data/haarcascade_frontalface_alt2.xml
