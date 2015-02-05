@@ -26,7 +26,7 @@ Minimal Dependencies:
     sudo apt-get install python-dev python python-scipy python-imaging-* python-opencv python-setuptools
 
 The most basic application, **ocvf_recognizer.py** will work without *ROS* or *RSB*. However, if you want to
-make use of typed message passing and RPC calls please install the following [ROS Install Instructions:](http://wiki.ros.org/indigo/Installation/Ubuntu)
+make use of typed message passing and RPC calls please install the following [ROS Install Instructions](http://wiki.ros.org/indigo/Installation/Ubuntu)
 
 Dependencies ROS (Indigo):
 
@@ -85,10 +85,9 @@ Now invoke the **face_cropper.py** tool that resides in the tools folder.
     python face_cropper.py Adam_Sandler /tmp/selected/adam_sandler /homes/flier/dev/ocvfacerec/data/haarcascade_frontalface_alt2.xml
 
 
-After successful execution you will end up with a separate *cropped* folder within
-each *person* or *class*. You need to copy/move the person/*cropped* folder to a different
-location and rename the folders according to the label, person respectively. All this should
-look like this:
+After successful execution you will end up with a separate *cropped* folder in each *person's* folder.
+You need to copy/move the person/*cropped* folder to a different location and rename the folders according
+to the desired label, person respectively. All this should look like this:
 
 
         celeb_database/
