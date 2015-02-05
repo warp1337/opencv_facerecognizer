@@ -54,7 +54,7 @@ Installing Package
 
 
 Installing Package Custom Prefix
--------------------
+---------------------------------
 
     mkdir -p ~/ocvfacerecognizer && cd ~/ocvfacerecognizer
     git clone https://github.com/warp1337/opencv_facerecognizer.git .
@@ -67,7 +67,7 @@ Installing Package Custom Prefix
 Usage Training
 ---------------
 
-    python ocvf_recognizer.py -t </path/to/images/> </path/to/model.pkl>
+    python ocvf_recognizer.py -t </path/to/images/> -c </path/to/cascade.xml> </path/to/model.pkl>
 
 
 Usage Recognition Simple
@@ -75,10 +75,12 @@ Usage Recognition Simple
 
     TODO
 
+
 Usage Recognition ROS
 ----------------------
 
     TODO
+
 
 Usage Recognition RSB
 ----------------------
