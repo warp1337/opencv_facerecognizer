@@ -9,5 +9,5 @@ contributed to the library, then feel free to add your
 name to the list:
 
 * Philipp Wagner [http://bytefish.de](http://bytefish.de)
-* Florian Lier [flier@techfak.uni-bielefeld.de]
-* Norman Köster [nkoester@techfak.uni-bielefeld.de]
+* Florian Lier [flier[at]techfak.uni-bielefeld.de]
+* Norman Köster [nkoester[at]techfak.uni-bielefeld.de]

@@ -1,5 +1,5 @@
 # Copyright (c) 2012. Philipp Wagner <bytefish[at]gmx[dot]de> and
-# Florian Lier <flier@techfak.uni-bielefeld.de>
+# Florian Lier <flier[at]techfak.uni-bielefeld.de>
 # Released to public domain under terms of the BSD Simplified license.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -174,7 +174,7 @@ def clock():
     return cv2.getTickCount() / cv2.getTickFrequency()
 
 
-@contextmanager
+[at]contextmanager
 def Timer(msg):
     print msg, '...',
     start = clock()
@@ -231,7 +231,7 @@ class RectSelector:
         cv2.rectangle(vis, (x0, y0), (x1, y1), (0, 255, 0), 2)
         return True
 
-    @property
+    [at]property
     def dragging(self):
         return self.drag_rect is not None
 

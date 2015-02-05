@@ -1,5 +1,5 @@
 # Copyright (c) 2012. Philipp Wagner <bytefish[at]gmx[dot]de> and
-# Florian Lier <flier@techfak.uni-bielefeld.de>
+# Florian Lier <flier[at]techfak.uni-bielefeld.de>
 # Released to public domain under terms of the BSD Simplified license.
 #
 # Redistribution and use in source and binary forms, with or without

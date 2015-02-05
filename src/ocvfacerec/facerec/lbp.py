@@ -1,5 +1,5 @@
 # Copyright (c) 2012. Philipp Wagner <bytefish[at]gmx[dot]de> and
-# Florian Lier <flier@techfak.uni-bielefeld.de>
+# Florian Lier <flier[at]techfak.uni-bielefeld.de>
 # Released to public domain under terms of the BSD Simplified license.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,7 @@ class LocalDescriptor(object):
     def __call__(self, X):
         raise NotImplementedError("Every LBPOperator must implement the __call__ method.")
 
-    @property
+    [at]property
     def neighbors(self):
         return self._neighbors
 
@@ -125,7 +125,7 @@ class ExtendedLBP(LocalDescriptor):
             result += (1 << i) * D
         return result
 
-    @property
+    [at]property
     def radius(self):
         return self._radius
 
@@ -196,7 +196,7 @@ class VarLBP(LocalDescriptor):
         result = m2 / (self._neighbors - 1)
         return result
 
-    @property
+    [at]property
     def radius(self):
         return self._radius
 
@@ -306,7 +306,7 @@ class LPQ(LocalDescriptor):
 
         return np.reshape(B, np.shape(Fa))
 
-    @property
+    [at]property
     def radius(self):
         return self._radius
 

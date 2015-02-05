@@ -1,5 +1,5 @@
 # Copyright (c) 2012. Philipp Wagner <bytefish[at]gmx[dot]de> and
-# Florian Lier <flier@techfak.uni-bielefeld.de>
+# Florian Lier <flier[at]techfak.uni-bielefeld.de>
 # Released to public domain under terms of the BSD Simplified license.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -115,19 +115,19 @@ class PCA(AbstractFeature):
         X = np.dot(self._eigenvectors, X)
         return X + self._mean
 
-    @property
+    [at]property
     def num_components(self):
         return self._num_components
 
-    @property
+    [at]property
     def eigenvalues(self):
         return self._eigenvalues
 
-    @property
+    [at]property
     def eigenvectors(self):
         return self._eigenvectors
 
-    @property
+    [at]property
     def mean(self):
         return self._mean
 
@@ -183,15 +183,15 @@ class LDA(AbstractFeature):
     def reconstruct(self, X):
         return np.dot(self._eigenvectors, X)
 
-    @property
+    [at]property
     def num_components(self):
         return self._num_components
 
-    @property
+    [at]property
     def eigenvectors(self):
         return self._eigenvectors
 
-    @property
+    [at]property
     def eigenvalues(self):
         return self._eigenvalues
 
@@ -240,15 +240,15 @@ class Fisherfaces(AbstractFeature):
     def reconstruct(self, X):
         return np.dot(self._eigenvectors, X)
 
-    @property
+    [at]property
     def num_components(self):
         return self._num_components
 
-    @property
+    [at]property
     def eigenvalues(self):
         return self._eigenvalues
 
-    @property
+    [at]property
     def eigenvectors(self):
         return self._eigenvectors
 

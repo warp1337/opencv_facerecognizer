@@ -1,5 +1,5 @@
 # Copyright (c) 2012. Philipp Wagner <bytefish[at]gmx[dot]de> and
-# Florian Lier <flier@techfak.uni-bielefeld.de>
+# Florian Lier <flier[at]techfak.uni-bielefeld.de>
 # Released to public domain under terms of the BSD Simplified license.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -41,7 +41,7 @@ setup(
         distributed processing via ROS and RSB Middleware. It is _heavily_ based on
         Philipp Wagner's facerec Framework [https://github.com/bytefish/facerec]''',
     author='Philipp Wagner, Florian Lier, Norman Koester',
-    author_email='flier@techfak.uni-bielefeld.de',
+    author_email='flier[at]techfak.uni-bielefeld.de',
     url='https://github.com/warp1337/opencv_facerecognizer.git',
     license='BSD',
     classifiers=[

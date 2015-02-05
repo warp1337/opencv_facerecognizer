@@ -1,6 +1,6 @@
 # Copyright (c) 2012. Philipp Wagner <bytefish[at]gmx[dot]de> and
-# Norman Koester <nkoester@techfak.uni-bielefeld.de> and
-# Florian Lier <flier@techfak.uni-bielefeld.de>
+# Norman Koester <nkoester[at]techfak.uni-bielefeld.de> and
+# Florian Lier <flier[at]techfak.uni-bielefeld.de>
 #
 # Released to public domain under terms of the BSD Simplified license.
 #

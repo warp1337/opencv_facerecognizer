@@ -1,6 +1,6 @@
 # Source: http://www.lucaamore.com/?p=638
 
-# Adaption: Florian Lier | flier@techfak.uni-bielefeld.
+# Adaption: Florian Lier | flier[at]techfak.uni-bielefeld.
 # + Name Prefix for images
 # + More Pythonic Syntax
 # + Cropped Images Folder
