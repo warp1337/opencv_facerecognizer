@@ -174,7 +174,7 @@ def clock():
     return cv2.getTickCount() / cv2.getTickFrequency()
 
 
-[at]contextmanager
+@contextmanager
 def Timer(msg):
     print msg, '...',
     start = clock()

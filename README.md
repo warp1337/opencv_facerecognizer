@@ -44,14 +44,46 @@ Dependencies RSB:
     TODO
 
 
-Usage Learning
+Installing Package
+-------------------
+
+    mkdir -p ~/ocvfacerecognizer && cd ~/ocvfacerecognizer
+    git clone https://github.com/warp1337/opencv_facerecognizer.git .
+    cd src
+    python setup.py install
+
+
+Installing Package Custom Prefix
+-------------------
+
+    mkdir -p ~/ocvfacerecognizer && cd ~/ocvfacerecognizer
+    git clone https://github.com/warp1337/opencv_facerecognizer.git .
+    cd src
+    mkdir -p /tmp/custom-prefix/lib/python2.7/site-packages
+    export PYTHONPATH=/tmp/custom-prefix/lib/python2.7/site-packages:$PYTHONPATH
+    python setup.py install --prefix=/tmp/custom-prefix/
+
+
+Usage Training
 ---------------
-TODO
+
+    python ocvf_recognizer.py -t </path/to/images/> </path/to/model.pkl>
 
 
-Usage Recognition
------
-TODO
+Usage Recognition Simple
+-------------------------
+
+    TODO
+
+Usage Recognition ROS
+----------------------
+
+    TODO
+
+Usage Recognition RSB
+----------------------
+
+    TODO
 
 
 Usage Create Training Set
