@@ -115,19 +115,19 @@ class PCA(AbstractFeature):
         X = np.dot(self._eigenvectors, X)
         return X + self._mean
 
-    [at]property
+    @property
     def num_components(self):
         return self._num_components
 
-    [at]property
+    @property
     def eigenvalues(self):
         return self._eigenvalues
 
-    [at]property
+    @property
     def eigenvectors(self):
         return self._eigenvectors
 
-    [at]property
+    @property
     def mean(self):
         return self._mean
 
@@ -183,15 +183,15 @@ class LDA(AbstractFeature):
     def reconstruct(self, X):
         return np.dot(self._eigenvectors, X)
 
-    [at]property
+    @property
     def num_components(self):
         return self._num_components
 
-    [at]property
+    @property
     def eigenvectors(self):
         return self._eigenvectors
 
-    [at]property
+    @property
     def eigenvalues(self):
         return self._eigenvalues
 
@@ -240,15 +240,15 @@ class Fisherfaces(AbstractFeature):
     def reconstruct(self, X):
         return np.dot(self._eigenvectors, X)
 
-    [at]property
+    @property
     def num_components(self):
         return self._num_components
 
-    [at]property
+    @property
     def eigenvalues(self):
         return self._eigenvalues
 
-    [at]property
+    @property
     def eigenvectors(self):
         return self._eigenvectors
 

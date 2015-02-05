@@ -40,7 +40,7 @@ class LocalDescriptor(object):
     def __call__(self, X):
         raise NotImplementedError("Every LBPOperator must implement the __call__ method.")
 
-    [at]property
+    @property
     def neighbors(self):
         return self._neighbors
 
@@ -125,7 +125,7 @@ class ExtendedLBP(LocalDescriptor):
             result += (1 << i) * D
         return result
 
-    [at]property
+    @property
     def radius(self):
         return self._radius
 
@@ -196,7 +196,7 @@ class VarLBP(LocalDescriptor):
         result = m2 / (self._neighbors - 1)
         return result
 
-    [at]property
+    @property
     def radius(self):
         return self._radius
 
@@ -306,7 +306,7 @@ class LPQ(LocalDescriptor):
 
         return np.reshape(B, np.shape(Fa))
 
-    [at]property
+    @property
     def radius(self):
         return self._radius
 

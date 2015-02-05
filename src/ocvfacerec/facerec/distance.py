@@ -38,7 +38,7 @@ class AbstractDistance(object):
     def __call__(self, p, q):
         raise NotImplementedError("Every AbstractDistance must implement the __call__ method.")
 
-    [at]property
+    @property
     def name(self):
         return self._name
 
