@@ -25,8 +25,8 @@ Minimal Dependencies:
 
     sudo apt-get install python-dev python python-scipy python-imaging-* python-opencv python-setuptools
 
-The most basic application, **ocvf_recognizer.py** will work without ROS or RSB. However, if you want to
-make use of message passing and RPC calls, and thus a distributed system, please install the following:
+The most basic application, **ocvf_recognizer.py** will work without *ROS* or *RSB*. However, if you want to
+make use of typed message passing and RPC calls please install the following [ROS Install Instructions:](http://wiki.ros.org/indigo/Installation/Ubuntu)
 
 Dependencies ROS (Indigo):
 
@@ -36,9 +36,8 @@ Dependencies ROS (Groovy):
 
     sudo apt-get ros-groovy-desktop ros-groovy-people-msgs ros-groovy-usb-cam
 
-Hint: You might save some disk space by installing ros-[indigo|groovy]-base. We haven't actually
-checked if it contains all the required packages. If you are familiar with ROS you may install
-missing packages manually.
+*Hint*: You might save some disk space by installing ros-[*indigo*|*groovy*]-base. We haven't actually
+checked if they contain all required packages. If so, you need to install missing packages manually.
 
 Dependencies RSB:
 
