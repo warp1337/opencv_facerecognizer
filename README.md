@@ -49,6 +49,69 @@ Usage Recognition
 TODO
 
 
+Usage Create Training Set
+--------------------------
+Download or record a set of images you want to train you model with, preferably *.jpg files.
+Save these files in separate folders like:
+
+    my_images/
+        ├── adam_sandler
+        │   ├── adam_sandlerasd0.jpg
+        │   ├── Sandleranm3bn23.jpg
+        │   ├── 234k34lk55kl3.jpg
+        │   ├── foobaz_sandler.jpg
+        │   └── ...
+        ├── alfred_molina
+        │   ├── m00wlina.jpg
+        │   ├── Alfred_Molina23.jpg
+        │   ├── 1337Molina.jpg
+        │   ├── alfred.jpg
+        │   ├── Molina4.jpg
+        │   └── ...
+        ├── bratt_pitt
+        │   ├── bratt.jpg
+        │   ├── branjolina.jpg
+        │   ├── ...
+
+
+Now invoke the face_cropper.py tool that resides in the tools folder.
+
+    python face_cropper.py <label> </path/to/images> <haarcascade.file>
+    python face_cropper.py Adam_Sandler /tmp/selected/adam_sandler /homes/flier/dev/ocvfacerec/data/haarcascade_frontalface_alt2.xml
+
+
+After successful execution you will end up with a separate *cropped* folder within
+each *person* or *class*. You need to copy/move the person/*cropped* folder to a different
+location and rename the folders according to the label, person respectively. All this should
+look like this:
+
+
+        celeb_database/
+        ├── adam_sandler
+        │   ├── Adam_Sandler_crop0.jpg
+        │   ├── Adam_Sandler_crop10.jpg
+        │   ├── Adam_Sandler_crop12.jpg
+        │   ├── Adam_Sandler_crop1.jpg
+        │   ├── Adam_Sandler_crop3.jpg
+        │   ├── Adam_Sandler_crop4.jpg
+        │   ├── Adam_Sandler_crop5.jpg
+        │   ├── Adam_Sandler_crop7.jpg
+        │   ├── Adam_Sandler_crop8.jpg
+        │   └── Adam_Sandler_crop9.jpg
+        ├── alfred_molina
+        │   ├── Alfred_Molina_crop0.jpg
+        │   ├── Alfred_Molina_crop1.jpg
+        │   ├── Alfred_Molina_crop2.jpg
+        │   ├── Alfred_Molina_crop3.jpg
+        │   ├── Alfred_Molina_crop4.jpg
+        │   ├── Alfred_Molina_crop5.jpg
+        │   ├── Alfred_Molina_crop6.jpg
+        │   ├── Alfred_Molina_crop7.jpg
+        │   ├── Alfred_Molina_crop8.jpg
+        │   └── Alfred_Molina_crop9.jpg
+
+
+
 Replication
 -------------
 TODO
