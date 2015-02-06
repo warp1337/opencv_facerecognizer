@@ -33,6 +33,7 @@
 import Image
 from Queue import Queue
 import cv2
+import cv
 import logging
 import optparse
 import os, errno
@@ -53,6 +54,76 @@ from ocvfacerec.facerec.feature import Fisherfaces
 from ocvfacerec.facerec.model import PredictableModel
 from ocvfacerec.facerec.serialization import save_model
 from ocvfacerec.facerec.validation import KFoldCrossValidation
+
+
+def detect_face(image, face_cascade, return_image=False):
+
+    # This function takes a grey scale cv image and finds
+    # the patterns defined in the haarcascade function
+
+    min_size = (20, 20)
+    haar_scale = 1.1
+    min_neighbors = 5
+    haar_flags = 0
+
+    # Equalize the histogram
+    cv.EqualizeHist(image, image)
+
+    # Detect the faces
+    faces = cv.HaarDetectObjects(
+        image, face_cascade, cv.CreateMemStorage(0),
+        haar_scale, min_neighbors, haar_flags, min_size
+    )
+
+    # If faces are found
+    if faces and return_image:
+        for ((x, y, w, h), n) in faces:
+            # Convert bounding box to two CvPoints
+            pt1 = (int(x), int(y))
+            pt2 = (int(x + w), int(y + h))
+            cv.Rectangle(image, pt1, pt2, cv.RGB(255, 0, 0), 5, 8, 0)
+
+    if return_image:
+        return image
+    else:
+        return faces
+
+
+def pil2_cvgrey(pil_im):
+    # Convert a PIL image to a greyscale cv image
+    # from: http://pythonpath.wordpress.com/2012/05/08/pil-to-opencv-image/
+    pil_im = pil_im.convert('L')
+    cv_im = cv.CreateImageHeader(pil_im.size, cv.IPL_DEPTH_8U, 1)
+    cv.SetData(cv_im, pil_im.tostring(), pil_im.size[0])
+    return cv_im
+
+def img_crop(image, crop_box, box_scale=1):
+    # Crop a PIL image with the provided box [x(left), y(upper), w(width), h(height)]
+
+    # Calculate scale factors
+    x_delta = max(crop_box[2] * (box_scale - 1), 0)
+    y_delta = max(crop_box[3] * (box_scale - 1), 0)
+
+
+    # Convert cv box to PIL box [left, upper, right, lower]
+    pil_box = [crop_box[0] - x_delta, crop_box[1] - y_delta, crop_box[0] + crop_box[2] + x_delta,
+               crop_box[1] + crop_box[3] + y_delta]
+
+    return image.crop(pil_box)
+
+def face_crop_single_image(pil_image, face_cascade, box_scale=1):
+
+    cv_im = pil2_cvgrey(pil_image)
+    faces = detect_face(cv_im, face_cascade)
+    face_list = []
+
+    cropped_image = None
+    if faces:
+        for face in faces:
+            cropped_image = img_crop(pil_image, face[0], box_scale=box_scale)
+            face_list.append(cropped_image)
+    return cropped_image
+
 
 
 def mkdir_p(path):
@@ -141,7 +212,7 @@ class RSBConnector(MiddlewareConnector):
         # Send a short "restart" event to the recognizer
         self.restart_publisher.publishData("restart")
 
-    def start_training(self):
+    def wait_for_start_training(self):
         return self.last_train.get(True, timeout=1)
 
     def get_image(self):
@@ -156,7 +227,9 @@ class Trainer(object):
         self.retrain_source = options.retrain_source
         self.image_source = options.image_source
         self.restart_target = options.restart_target
+        self.mugshot_size = options.mugshot_size
         self.counter = 0
+        self.cascade_filename = cv.Load(options.cascade_filename)
 
         self.training_data_path = options.training_data_path
         self.training_image_number = options.training_image_number
@@ -167,11 +240,13 @@ class Trainer(object):
             sys.exit(1)
 
         self.model_path = options.model_path
-
+        self.abort_training = False
         self.doRun = True
+
         def signal_handler(signal, frame):
             print ">> Exiting..."
             self.doRun = False
+            self.abort_training = True
         signal.signal(signal.SIGINT, signal_handler)
 
     def run(self):
@@ -182,24 +257,38 @@ class Trainer(object):
         print "retrain command source: %s\n" % self.retrain_source
 
         print "run dos run...\n"
-        self.middleware.activate(self.image_source, self.retrain_source, self.restart_target)
+        try:
+            self.middleware.activate(self.image_source, self.retrain_source, self.restart_target)
+        except Exception, e:
+            print ">> [ERROR] can't activate middleware! "
+            traceback.print_exc()
+
+        try:
+            self.middleware.activate(self.image_source, self.retrain_source, self.restart_target)
+        except Exception, e:
+            print "ERROR: ", e
+            # self.doRun = False
 
         self.re_train()
-
+        print ">> Ready.\n"
         while self.doRun:
-            # blocking
             try:
-                train_name = self.middleware.start_training()
+                train_name = self.middleware.wait_for_start_training()
             except Exception, e:
                 # Check every timeout seconds if we are supposed to exit
                 continue
+
             try:
                 print "Training for '%s' (run %d)" % (train_name, self.counter)
-                self.record_images(train_name)
-                self.re_train()
-                self.restart_classifier()
-                self.counter += 1
-                print "\n"
+                if self.record_images(train_name):
+                    self.re_train()
+                    self.restart_classifier()
+                    self.counter += 1
+                else:
+                    print ">>\tUnable to collect enough mugshots :("
+
+                print ">> Ready.\n"
+
             except Exception, e:
                 print ">> [ERROR]: ", e
                 traceback.print_exc()
@@ -211,17 +300,63 @@ class Trainer(object):
         print "done. bye bye!"
 
     def record_images(self, train_name):
-        print ">> Recoring %d images from %s..." % (self.training_image_number, self.image_source)
+        print ">> Recording %d images from %s..." % (self.training_image_number, self.image_source)
         person_image_path = os.path.join(self.training_data_path, train_name)
         mkdir_p(person_image_path)
-        for i in range(0, self.training_image_number):
-            input_image = self.middleware.get_image()
+        num_mughshots = 0
+        abort_threshold = 40
+        abort_count = 0
+        switch = False
+        print ">>\t",
+        while num_mughshots < self.training_image_number and not self.abort_training and abort_count < abort_threshold:
+
+            # take every second frame to add some more variance
+            switch = not switch
+            if switch:
+                input_image = self.middleware.get_image()
+            else:
+                continue
+
+
             im = Image.fromarray(cv2.cvtColor(input_image, cv2.COLOR_BGR2RGB))
-            im.save(os.path.join(person_image_path, "%03d.jpg" % i))
+            cropped_image = face_crop_single_image(im, self.cascade_filename)
+
+            ok_shot = False
+            if cropped_image:
+                if cropped_image.size[0] >= self.mugshot_size and cropped_image.size[1] >= self.mugshot_size:
+                    sys.stdout.write("+")
+                    sys.stdout.flush()
+                    cropped_image.save(os.path.join(person_image_path, "%03d.jpg" % num_mughshots))
+                    num_mughshots += 1
+                    ok_shot = True
+
+            if ok_shot is False:
+                abort_count += 1
+                sys.stdout.write("-")
+                sys.stdout.flush()
+
+        print ""
+        if abort_count >= abort_threshold:
+            return False
+        else:
+            return True
+            # im.save(os.path.join(person_image_path, "%03d.jpg" % i))
 
     def re_train(self):
         print ">> Re-train running ..."
+        walk_result = [x[0] for x in os.walk(self.training_data_path)][1:]
+        if len(walk_result) > 0:
+            print ">>\tpersons available for training: ", ", ".join([x.split("/")[-1] for x in walk_result])
+        else:
+            print ">>\tno persons found for training :("
+            return
+
         [images, labels, subject_names] = self.read_images(self.training_data_path, self.image_size)
+
+        if len(labels) == 0:
+            self.doRun = False
+            raise Exception("No images in folder %s This is bad!" % self.training_data_path)
+
         # Zip us a {label, name} dict from the given data:
         list_of_labels = list(xrange(max(labels) + 1))
         subject_dictionary = dict(zip(list_of_labels, subject_names))
@@ -337,7 +472,7 @@ if __name__ == '__main__':
                       help="Storage path for the training data files (default: %default).")
 
     group_algorithm.add_option("-n", "--training-images", action="store",
-                      dest="training_image_number", type="int", default=30,
+                      dest="training_image_number", type="int", default=20,
                       help="Number of images to use for training of a new person(default: %default).")
     group_algorithm.add_option("-r", "--resize", action="store", type="string",
                       dest="image_size", default="70x70",
@@ -345,6 +480,13 @@ if __name__ == '__main__':
     group_algorithm.add_option("-v", "--validate", action="store",
                       dest="numfolds", type="int", default=None,
                       help="Performs a k-fold cross validation on the dataset, if given (default: %default).")
+    group_algorithm.add_option("-c", "--cascade", action="store", dest="cascade_filename",
+                      default="haarcascade_frontalface_alt2.xml",
+                      help="Sets the path to the Haar Cascade used for the face detection part (default: %default).")
+    group_algorithm.add_option("-l", "--mugshot-size", action="store", type="int", dest="mugshot_size",
+                      default=110,
+                      help="Sets minimal size (in pixels) required for a mugshot of a person in order to use it for training (default: %default).")
+
 
     parser.add_option_group(group_mw)
     parser.add_option_group(group_io)

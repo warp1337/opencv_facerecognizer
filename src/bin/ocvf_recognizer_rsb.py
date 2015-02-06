@@ -146,6 +146,7 @@ class Recognizer(object):
         if run_local:
             self.cam = create_capture(camera_id)
         self.doRun = True
+        self.restart = False
 
         def signal_handler(signal, frame):
             print ">> RSB Exiting."
@@ -153,11 +154,16 @@ class Recognizer(object):
 
         signal.signal(signal.SIGINT, signal_handler)
         # RSB Stuff
-        registerGlobalConverter(IplimageConverter())
-        registerGlobalConverter(ProtocolBufferConverter(messageClass=ClassificationResult))
+        try:
+            registerGlobalConverter(IplimageConverter())
+            registerGlobalConverter(ProtocolBufferConverter(messageClass=ClassificationResult))
+        except Exception, e:
+            print "[ERROR] ", e
         rsb.setDefaultParticipantConfig(rsb.ParticipantConfig.fromDefaultSources())
         self.listener = rsb.createListener(inscope)
         self.lastImage = Queue(1)
+        self.restart_listener = rsb.createListener("/ocvfacerec/recognizer/restart/")
+        self.last_restart_request = Queue(1)
 
     def add_last_image(self, image_event):
         try:
@@ -166,8 +172,16 @@ class Recognizer(object):
             pass
         self.lastImage.put(np.asarray(image_event.data[:,:]), False)
 
+    def add_restart_request(self, restart_event):
+        try:
+            self.last_restart_request.get(False)
+        except Exception, e:
+            pass
+        self.last_restart_request.put(restart_event.data, False)
+
     def run_distributed(self):
         self.listener.addHandler(self.add_last_image)
+        self.restart_listener.addHandler(self.add_restart_request)
         informer = rsb.createInformer("/ocvfacerec/result", dataType=ClassificationResult)
         while self.doRun:
             # GetLastImage is blocking so we won't get a "None" Image
@@ -198,8 +212,19 @@ class Recognizer(object):
             # crwp.confidence = bytes(distance)
             # cr.classes.add(crwp)
             cv2.waitKey(self.wait)
+
+            try:
+                x = self.last_restart_request.get(False) 
+                if x:
+                    self.restart = True
+                    self.doRun = False
+            except Exception, e :
+                pass
+
         self.listener.deactivate()
+        self.restart_listener.deactivate()
         # informer.deactivate()
+        print "Exiting"
 
 if __name__ == '__main__':
     from optparse import OptionParser
@@ -248,55 +273,68 @@ if __name__ == '__main__':
     except:
         print ">> [Error] Unable to parse the given image size '%s'. Please pass it in the format [width]x[height]!" % options.size
         sys.exit(1)
-    # We have got a dataset to learn a new model from:
-    if options.dataset:
-        # Check if the given dataset exists:
-        if not os.path.exists(options.dataset):
-            print ">> [Error] No dataset found at '%s'." % options.dataset
+
+    def load_dataset():
+        # We have got a dataset to learn a new model from:
+        if options.dataset:
+            # Check if the given dataset exists:
+            if not os.path.exists(options.dataset):
+                print ">> [Error] No dataset found at '%s'." % options.dataset
+                sys.exit(1)
+                # Reads the images, labels and folder_names from a given dataset. Images
+            # are resized to given size on the fly:
+            print ">> Loading dataset..."
+            [images, labels, subject_names] = read_images(options.dataset, image_size)
+            # Zip us a {label, name} dict from the given data:
+            list_of_labels = list(xrange(max(labels) + 1))
+            subject_dictionary = dict(zip(list_of_labels, subject_names))
+            # Get the model we want to compute:
+            model = get_model(image_size=image_size, subject_names=subject_dictionary)
+            # Sometimes you want to know how good the model may perform on the data
+            # given, the script allows you to perform a k-fold Cross Validation before
+            # the Detection & Recognition part starts:
+            if options.numfolds:
+                print ">> Validating model with %s folds..." % options.numfolds
+                # We want to have some log output, so set up a new logging handler
+                # and point it to stdout:
+                handler = logging.StreamHandler(sys.stdout)
+                formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+                handler.setFormatter(formatter)
+                # Add a handler to facerec modules, so we see what's going on inside:
+                logger = logging.getLogger("facerec")
+                logger.addHandler(handler)
+                logger.setLevel(logging.DEBUG)
+                # Perform the validation & print results:
+                crossval = KFoldCrossValidation(model, k=options.numfolds)
+                crossval.validate(images, labels)
+                crossval.print_results()
+            # Compute the model:
+            print ">> Computing the model..."
+            model.compute(images, labels)
+            # And save the model, which uses Pythons pickle module:
+            print ">> Saving the model..."
+            save_model(model_filename, model)
+        else:
+            print ">> Loading model... " + str(model_filename)
+            model = load_model(model_filename)
+        # We operate on an ExtendedPredictableModel. Quit the Recognizerlication if this
+        # isn't what we expect it to be:
+        if not isinstance(model, ExtendedPredictableModel):
+            print ">> [Error] The given model is not of type '%s'." % "ExtendedPredictableModel"
             sys.exit(1)
-            # Reads the images, labels and folder_names from a given dataset. Images
-        # are resized to given size on the fly:
-        print ">> Loading dataset..."
-        [images, labels, subject_names] = read_images(options.dataset, image_size)
-        # Zip us a {label, name} dict from the given data:
-        list_of_labels = list(xrange(max(labels) + 1))
-        subject_dictionary = dict(zip(list_of_labels, subject_names))
-        # Get the model we want to compute:
-        model = get_model(image_size=image_size, subject_names=subject_dictionary)
-        # Sometimes you want to know how good the model may perform on the data
-        # given, the script allows you to perform a k-fold Cross Validation before
-        # the Detection & Recognition part starts:
-        if options.numfolds:
-            print ">> Validating model with %s folds..." % options.numfolds
-            # We want to have some log output, so set up a new logging handler
-            # and point it to stdout:
-            handler = logging.StreamHandler(sys.stdout)
-            formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-            handler.setFormatter(formatter)
-            # Add a handler to facerec modules, so we see what's going on inside:
-            logger = logging.getLogger("facerec")
-            logger.addHandler(handler)
-            logger.setLevel(logging.DEBUG)
-            # Perform the validation & print results:
-            crossval = KFoldCrossValidation(model, k=options.numfolds)
-            crossval.validate(images, labels)
-            crossval.print_results()
-        # Compute the model:
-        print ">> Computing the model..."
-        model.compute(images, labels)
-        # And save the model, which uses Pythons pickle module:
-        print ">> Saving the model..."
-        save_model(model_filename, model)
-    else:
-        print ">> Loading model... " + str(model_filename)
-        model = load_model(model_filename)
-    # We operate on an ExtendedPredictableModel. Quit the Recognizerlication if this
-    # isn't what we expect it to be:
-    if not isinstance(model, ExtendedPredictableModel):
-        print ">> [Error] The given model is not of type '%s'." % "ExtendedPredictableModel"
-        sys.exit(1)
+
+        return model
+
+    model = load_dataset()
+
     # Now it's time to finally start the Recognizerlication! It simply get's the model
     # and the image size the incoming webcam or video images are resized to:
     print ">> Using Remote RSB Camera Stream"
-    Recognizer(model=model, camera_id=options.camera_id, cascade_filename=options.cascade_filename, run_local=False, inscope=options.rsb_source, wait=options.wait_time).run_distributed()
+    x = Recognizer(model=model, camera_id=options.camera_id, cascade_filename=options.cascade_filename, run_local=False, inscope=options.rsb_source, wait=options.wait_time)
+    x.run_distributed()
+    while x.restart:
+        time.sleep(1)
+        model = load_dataset()
+        x = Recognizer(model=model, camera_id=options.camera_id, cascade_filename=options.cascade_filename, run_local=False, inscope=options.rsb_source, wait=options.wait_time)
+        x.run_distributed()
 

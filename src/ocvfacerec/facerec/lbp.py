@@ -206,18 +206,18 @@ class VarLBP(LocalDescriptor):
 
 class LPQ(LocalDescriptor):
     """ This implementation of Local Phase Quantization (LPQ) is a 1:1 adaption of the 
-        original implementation by Ojansivu V & Heikkilä J, which is available at:
+        original implementation by Ojansivu V & Heikkilae J, which is available at:
         
             * http://www.cse.oulu.fi/CMV/Downloads/LPQMatlab
             
         So all credit goes to them.
       
       Reference: 
-        Ojansivu V & Heikkilä J (2008) Blur insensitive texture classification 
+        Ojansivu V & Heikkilae J (2008) Blur insensitive texture classification
         using local phase quantization. Proc. Image and Signal Processing 
         (ICISP 2008), Cherbourg-Octeville, France, 5099:236-243.
 
-        Copyright 2008 by Heikkilä & Ojansivu
+        Copyright 2008 by Heikkilae & Ojansivu
     """
 
     def __init__(self, radius=3):
