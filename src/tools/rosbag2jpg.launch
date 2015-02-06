@@ -1,0 +1,8 @@
+<!-- You Just need to provide a path to your bag file and an input topic. Images are saved in ~/.ros/ -->
+
+<launch>
+  <node pkg="rosbag" type="play" name="rosbag" args="/media/local_data/flier/faces.bag"/>
+  <node name="extract" pkg="image_view" type="extract_images" respawn="false" output="screen" cwd="ROS_HOME">
+    <remap from="image" to="/usb_cam/image_raw"/>
+  </node>
+</launch>
