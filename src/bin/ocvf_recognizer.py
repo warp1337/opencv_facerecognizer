@@ -181,8 +181,7 @@ if __name__ == '__main__':
     parser.add_option("-c", "--cascade", action="store", dest="cascade_filename",
                       default="haarcascade_frontalface_alt2.xml",
                       help="Sets the path to the Haar Cascade used for the face detection part (default: haarcascade_frontalface_alt2.xml).")
-    parser.add_option("-w", "--wait", action="store", dest="wait_time",
-                      default=100, type="int",
+    parser.add_option("-w", "--wait", action="store", dest="wait_time", default=100, type="int",
                       help="Amount of time (in ms) to sleep between face identifaction runs (frames). Default is 100 ms")
     (options, args) = parser.parse_args()
     print "\n"

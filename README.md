@@ -67,7 +67,7 @@ Installing Package Custom Prefix
 Usage Training
 ---------------
 
-    python ocvf_recognizer.py -t </path/to/images/> -c </path/to/cascade.xml> </path/to/model.pkl>
+    python ocvf_recognizer.py -t </path/to/images/> -c </path/to/cascade.xml> -v 10 </path/to/model.pkl>
 
 
 Usage Recognition Simple
