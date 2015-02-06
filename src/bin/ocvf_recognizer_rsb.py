@@ -221,8 +221,7 @@ if __name__ == '__main__':
                       default="haarcascade_frontalface_alt2.xml",
                       help="Sets the path to the Haar Cascade used for the face detection part (default: haarcascade_frontalface_alt2.xml).")
     parser.add_option("-s", "--rsb-source", action="store", dest="rsb_source", help="Grab video from RSB Middleware")
-    parser.add_option("-w", "--wait", action="store", dest="wait_time",
-                      default=20, type="int",
+    parser.add_option("-w", "--wait", action="store", dest="wait_time", default=20, type="int",
                       help="Amount of time (in ms) to sleep between face identifaction runs (frames). Default is 20 ms. Increase this value on low-end machines.")
     (options, args) = parser.parse_args()
     print "\n"
