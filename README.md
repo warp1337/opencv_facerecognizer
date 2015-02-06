@@ -91,8 +91,7 @@ Usage Recognition RSB
 
 Usage Create Training Set
 --------------------------
-Download or record a set of images you want to train you model with, preferably *.jpg files.
-Save these files in separate folders like:
+Download or record a set of images you want to train you model with. Save these files in separate folders like:
 
     my_images/
         ├── adam_sandler
