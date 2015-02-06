@@ -73,19 +73,20 @@ Usage Training
 Usage Recognition Simple
 -------------------------
 
-    TODO
+    python ocvf_recognizer.py -c </path/to/cascade.xml> </path/to/model.pkl>
 
 
 Usage Recognition ROS
 ----------------------
 
-    TODO
+    python ocvf_recognizer_ros.py -c </path/to/cascade.xml> </path/to/model.pkl> --ros-source </input/topic>
 
 
 Usage Recognition RSB
 ----------------------
 
-    TODO
+    python ocvf_recognizer_rsb.py -c </path/to/cascade.xml> </path/to/model.pkl> --rsb-source </input/scope>
+
 
 
 Usage Create Training Set
