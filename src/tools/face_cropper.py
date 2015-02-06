@@ -133,6 +133,6 @@ if __name__ == '__main__':
         prefix = sys.argv[1]
         folder = sys.argv[2]
         haar   = sys.argv[3]
-        path = folder + '/*.jpg'
+        path = folder + '/*'
         print ">> Loading all images in path " + path
         face_crop(path, prefix, haar, box_scale=1)
