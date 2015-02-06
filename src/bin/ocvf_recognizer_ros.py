@@ -163,11 +163,14 @@ class Recognizer(object):
         except Exception, e:
             print e
             return
-        # Resize the frame to half the original size for speeding up the detection process:
-        img = cv2.resize(cv_image, (cv_image.shape[1] / 2, cv_image.shape[0] / 2), interpolation=cv2.INTER_CUBIC)
+        # Resize the frame to half the original size for speeding up the detection process.
+        # In ROS we can control the size, so we are sending a 320*240 image by default.
+        # img = cv2.resize(cv_image, (cv_image.shape[1] / 2, cv_image.shape[0] / 2), interpolation=cv2.INTER_CUBIC)
+        img = cv_image
         imgout = img.copy()
+        # Remember the Persons found in current image
         persons = []
-        for i, r in enumerate(self.detector.detect(img)):
+        for _i, r in enumerate(self.detector.detect(img)):
             x0, y0, x1, y1 = r
             # (1) Get face, (2) Convert to grayscale & (3) resize to image_size:
             face = img[y0:y1, x0:x1]

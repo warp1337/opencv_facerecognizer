@@ -79,6 +79,7 @@ Usage Recognition Simple
 Usage Recognition ROS
 ----------------------
 
+    source /opt/ros/indigo/setup.bash
     python ocvf_recognizer_ros.py -c </path/to/cascade.xml> </path/to/model.pkl> --ros-source </input/topic>
 
 
