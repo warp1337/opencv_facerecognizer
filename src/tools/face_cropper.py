@@ -68,11 +68,9 @@ def img_crop(image, crop_box, box_scale=1):
     x_delta = max(crop_box[2] * (box_scale - 1), 0)
     y_delta = max(crop_box[3] * (box_scale - 1), 0)
 
-    margin = 70
-
     # Convert cv box to PIL box [left, upper, right, lower]
-    pil_box = [crop_box[0] - x_delta, crop_box[1] - y_delta, crop_box[0] + crop_box[2] + x_delta + margin,
-               crop_box[1] + crop_box[3] + y_delta + margin]
+    pil_box = [crop_box[0] - x_delta, crop_box[1] - y_delta, crop_box[0] + crop_box[2] + x_delta,
+               crop_box[1] + crop_box[3] + y_delta]
 
     return image.crop(pil_box)
 
