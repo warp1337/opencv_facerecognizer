@@ -127,7 +127,7 @@ def face_crop(image_pattern, prefix, haar, box_scale=1):
 # Use the box_scale to scale the cropping area. 1=opencv box, 2=2x the width and height
 if __name__ == '__main__':
     if not len(sys.argv) > 3:
-        print ">> USAGE: face_cropper.py <name prefix> </path/to/images> "
+        print ">> USAGE: face_cropper.py <name prefix> </path/to/images> </path/to/cascade.xml>"
         sys.exit(1)
     else:
         prefix = sys.argv[1]
