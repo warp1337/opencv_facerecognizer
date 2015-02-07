@@ -146,6 +146,6 @@ if __name__ == '__main__':
         sys.exit(1)
     # Now it's time to finally start the Recognizerlication! It simply get's the model
     # and the image size the incoming webcam or video images are resized to:
-    print ">> Using Local Camera " + "/dev/video" + str(options.camera_id)
+    print ">> Using Local Camera <-- " + "/dev/video " + str(options.camera_id)
     Recognizer(model=model, camera_id=options.camera_id, cascade_filename=options.cascade_filename, run_local=True, wait=options.wait_time).run()
 
