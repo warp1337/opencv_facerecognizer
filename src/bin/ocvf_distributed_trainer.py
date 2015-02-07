@@ -106,7 +106,6 @@ def img_crop(image, crop_box, box_scale=1):
     x_delta = max(crop_box[2] * (box_scale - 1), 0)
     y_delta = max(crop_box[3] * (box_scale - 1), 0)
 
-
     # Convert cv box to PIL box [left, upper, right, lower]
     pil_box = [crop_box[0] - x_delta, crop_box[1] - y_delta, crop_box[0] + crop_box[2] + x_delta,
                crop_box[1] + crop_box[3] + y_delta]
@@ -126,7 +125,6 @@ def face_crop_single_image(pil_image, face_cascade, box_scale=1):
             cropped_image = img_crop(pil_image, face[0], box_scale=box_scale)
             face_list.append(cropped_image)
     return cropped_image
-
 
 def mkdir_p(path):
     try:
@@ -399,8 +397,7 @@ class Trainer(object):
         # Define a 1-NN classifier with Euclidean Distance:
         classifier = NearestNeighbor(dist_metric=EuclideanDistance(), k=1)
         # Return the model as the combination:
-        return ExtendedPredictableModel(feature=feature, classifier=classifier, image_size=image_size,
-                                        subject_names=subject_names)
+        return ExtendedPredictableModel(feature=feature, classifier=classifier, image_size=image_size, subject_names=subject_names)
 
     def read_images(self, path, image_size=None):
         """Reads the images in a given folder, resizes images on the fly if size is given.
@@ -484,7 +481,6 @@ if __name__ == '__main__':
     group_algorithm.add_option("-l", "--mugshot-size", action="store", type="int", dest="mugshot_size",
                       default=110,
                       help="Sets minimal size (in pixels) required for a mugshot of a person in order to use it for training (default: %default).")
-
 
     parser.add_option_group(group_mw)
     parser.add_option_group(group_io)
