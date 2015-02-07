@@ -137,7 +137,7 @@ if __name__ == '__main__':
         trainer = TheTrainer(options.dataset, image_size, model_filename, _numfolds=options.numfolds)
         trainer.train()
 
-    print ">> Loading model... " + str(model_filename)
+    print ">> Loading model " + str(model_filename)
     model = load_model(model_filename)
     # We operate on an ExtendedPredictableModel. Quit the Recognizerlication if this
     # isn't what we expect it to be:
