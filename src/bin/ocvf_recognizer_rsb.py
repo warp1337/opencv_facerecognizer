@@ -210,7 +210,7 @@ if __name__ == '__main__':
     # Now it's time to finally start the Recognizerlication! It simply get's the model
     # and the image size the incoming webcam or video images are resized to:
     print ">> Using Remote RSB Camera Stream"
-    x = Recognizer(model=model, camera_id=options.camera_id, cascade_filename=options.cascade_filename, run_local=False, inscope=options.rsb_source, wait=options.wait_time)
+    x = Recognizer(model=model, camera_id=None, cascade_filename=options.cascade_filename, run_local=False, inscope=options.rsb_source, wait=options.wait_time)
     x.run_distributed()
     while x.restart:
         time.sleep(10)
