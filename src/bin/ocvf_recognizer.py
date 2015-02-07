@@ -74,10 +74,10 @@ class Recognizer(object):
                 # Draw the predicted name (folder name...):
                 draw_str(imgout, (x0 - 20, y0 - 40), "Label " + self.model.subject_names[predicted_label])
                 draw_str(imgout, (x0 - 20, y0 - 20), "Distance " + "%1.2f" % distance)
-            cv2.imshow('OCVFACEREC LOCAL CAMERA', imgout)
+            cv2.imshow('OCVFACEREC LOCAL CAMERA (q = Exit)', imgout)
             key = cv2.waitKey(self.wait)
             if 'q' == chr(key & 255):
-                print "<q> Pressed. Exiting."
+                print ">> 'q' Pressed. Exiting."
                 break
 
 if __name__ == '__main__':
