@@ -1,4 +1,5 @@
-# Copyright (c) 2012. Philipp Wagner <bytefish[at]gmx[dot]de> and
+# Copyright (c) 2012.
+# Philipp Wagner <bytefish[at]gmx[dot]de> and
 # Norman Koester <nkoester[at]techfak.uni-bielefeld.de> and
 # Florian Lier <flier[at]techfak.uni-bielefeld.de>
 #
@@ -30,16 +31,17 @@
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-import Image
-from Queue import Queue
+
+import sys
 import cv2
-import cv
+import Image
+import signal
 import logging
 import optparse
 import os, errno
-import signal
-import sys
 import traceback
+import numpy as np
+from Queue import Queue
 
 import rsb
 from rsb.converter import ProtocolBufferConverter
@@ -47,12 +49,11 @@ from rsb.converter import registerGlobalConverter
 from rstconverters.opencv import IplimageConverter
 import rstsandbox
 
-import numpy as np
-from ocvfacerec.facerec.classifier import NearestNeighbor
-from ocvfacerec.facerec.distance import EuclideanDistance
 from ocvfacerec.facerec.feature import Fisherfaces
 from ocvfacerec.facerec.model import PredictableModel
 from ocvfacerec.facerec.serialization import save_model
+from ocvfacerec.facerec.classifier import NearestNeighbor
+from ocvfacerec.facerec.distance import EuclideanDistance
 from ocvfacerec.facerec.validation import KFoldCrossValidation
 
 
@@ -67,11 +68,11 @@ def detect_face(image, face_cascade, return_image=False):
     haar_flags = 0
 
     # Equalize the histogram
-    cv.EqualizeHist(image, image)
+    cv2.EqualizeHist(image, image)
 
     # Detect the faces
-    faces = cv.HaarDetectObjects(
-        image, face_cascade, cv.CreateMemStorage(0),
+    faces = cv2.HaarDetectObjects(
+        image, face_cascade, cv2.CreateMemStorage(0),
         haar_scale, min_neighbors, haar_flags, min_size
     )
 
@@ -81,7 +82,7 @@ def detect_face(image, face_cascade, return_image=False):
             # Convert bounding box to two CvPoints
             pt1 = (int(x), int(y))
             pt2 = (int(x + w), int(y + h))
-            cv.Rectangle(image, pt1, pt2, cv.RGB(255, 0, 0), 5, 8, 0)
+            cv2.Rectangle(image, pt1, pt2, cv2.RGB(255, 0, 0), 5, 8, 0)
 
     if return_image:
         return image
@@ -93,9 +94,10 @@ def pil2_cvgrey(pil_im):
     # Convert a PIL image to a greyscale cv image
     # from: http://pythonpath.wordpress.com/2012/05/08/pil-to-opencv-image/
     pil_im = pil_im.convert('L')
-    cv_im = cv.CreateImageHeader(pil_im.size, cv.IPL_DEPTH_8U, 1)
-    cv.SetData(cv_im, pil_im.tostring(), pil_im.size[0])
+    cv_im = cv2.CreateImageHeader(pil_im.size, cv2.IPL_DEPTH_8U, 1)
+    cv2.SetData(cv_im, pil_im.tostring(), pil_im.size[0])
     return cv_im
+
 
 def img_crop(image, crop_box, box_scale=1):
     # Crop a PIL image with the provided box [x(left), y(upper), w(width), h(height)]
@@ -111,6 +113,7 @@ def img_crop(image, crop_box, box_scale=1):
 
     return image.crop(pil_box)
 
+
 def face_crop_single_image(pil_image, face_cascade, box_scale=1):
 
     cv_im = pil2_cvgrey(pil_image)
@@ -123,7 +126,6 @@ def face_crop_single_image(pil_image, face_cascade, box_scale=1):
             cropped_image = img_crop(pil_image, face[0], box_scale=box_scale)
             face_list.append(cropped_image)
     return cropped_image
-
 
 
 def mkdir_p(path):
@@ -148,7 +150,7 @@ class ExtendedPredictableModel(PredictableModel):
 
 
 class MiddlewareConnector(object):
-    # TODO USE ABC?
+    # TODO: USE ABC for abstraction?
     pass
 
 
@@ -189,19 +191,18 @@ class RSBConnector(MiddlewareConnector):
         registerGlobalConverter(IplimageConverter())
         rsb.setDefaultParticipantConfig(rsb.ParticipantConfig.fromDefaultSources())
 
-        # listen to image events
+        # Listen to image events
         self.image_listener = rsb.createListener(image_source)
         self.lastImage = Queue(1)
         self.image_listener.addHandler(self.add_last_image)
 
-        # listen to re-train events with a name
+        # Listen to re-train events with a name
         self.training_start = rsb.createListener(retrain_source)
         self.last_train = Queue(10)
         self.training_start.addHandler(self.add_last_train)
 
-        # publisher to restart recogniser
+        # Publisher to restart recogniser
         self.restart_publisher = rsb.createInformer(restart_target, dataType=str)
-
 
     def deactivate(self):
         self.image_listener.deactivate()
@@ -222,14 +223,14 @@ class RSBConnector(MiddlewareConnector):
 class Trainer(object):
 
     def __init__(self, options, middelware_connector):
+        self.counter = 0
         self.middleware = middelware_connector
         self.middleware_type = options.middleware_type
         self.retrain_source = options.retrain_source
         self.image_source = options.image_source
         self.restart_target = options.restart_target
         self.mugshot_size = options.mugshot_size
-        self.counter = 0
-        self.cascade_filename = cv.Load(options.cascade_filename)
+        self.cascade_filename = cv2.Load(options.cascade_filename)
 
         self.training_data_path = options.training_data_path
         self.training_image_number = options.training_image_number
@@ -250,13 +251,12 @@ class Trainer(object):
         signal.signal(signal.SIGINT, signal_handler)
 
     def run(self):
-        print "path to training data: %s " % self.training_data_path
-        print "path to model: %s\n" % self.model_path
-        print "middleware: %s" % self.middleware_type
-        print "image source: %s " % self.image_source
-        print "retrain command source: %s\n" % self.retrain_source
+        print ">> Path to training data: %s " % self.training_data_path
+        print ">> Path to model: %s\n" % self.model_path
+        print ">> Middleware used: %s" % self.middleware_type
+        print ">> Image source: %s " % self.image_source
+        print ">> Re-Train command source: %s\n" % self.retrain_source
 
-        print "run dos run...\n"
         try:
             self.middleware.activate(self.image_source, self.retrain_source, self.restart_target)
         except Exception, e:
@@ -266,7 +266,8 @@ class Trainer(object):
         try:
             self.middleware.activate(self.image_source, self.retrain_source, self.restart_target)
         except Exception, e:
-            print "ERROR: ", e
+            print ">> ERROR: ", e
+            # print "ERROR: ", e
             # self.doRun = False
 
         self.re_train()
@@ -285,19 +286,18 @@ class Trainer(object):
                     self.restart_classifier()
                     self.counter += 1
                 else:
-                    print ">>\tUnable to collect enough mugshots :("
+                    print ">> Unable to collect enough images"
 
-                print ">> Ready.\n"
+                print ">> Done.\n"
 
             except Exception, e:
-                print ">> [ERROR]: ", e
+                print ">> ERROR: ", e
                 traceback.print_exc()
                 continue
 
-
-        print "Deacivating middleware ..."
+        print ">> Deactivating middleware ..."
         self.middleware.deactivate()
-        print "done. bye bye!"
+        print ">> Done"
 
     def record_images(self, train_name):
         print ">> Recording %d images from %s..." % (self.training_image_number, self.image_source)
@@ -310,13 +310,12 @@ class Trainer(object):
         print ">>\t",
         while num_mughshots < self.training_image_number and not self.abort_training and abort_count < abort_threshold:
 
-            # take every second frame to add some more variance
+            # Take every second frame to add some more variance
             switch = not switch
             if switch:
                 input_image = self.middleware.get_image()
             else:
                 continue
-
 
             im = Image.fromarray(cv2.cvtColor(input_image, cv2.COLOR_BGR2RGB))
             cropped_image = face_crop_single_image(im, self.cascade_filename)
@@ -340,22 +339,21 @@ class Trainer(object):
             return False
         else:
             return True
-            # im.save(os.path.join(person_image_path, "%03d.jpg" % i))
 
     def re_train(self):
         print ">> Re-train running ..."
         walk_result = [x[0] for x in os.walk(self.training_data_path)][1:]
         if len(walk_result) > 0:
-            print ">>\tpersons available for training: ", ", ".join([x.split("/")[-1] for x in walk_result])
+            print ">>\tPersons available for training: ", ", ".join([x.split("/")[-1] for x in walk_result])
         else:
-            print ">>\tno persons found for training :("
+            print ">>\tNo persons found for training"
             return
 
         [images, labels, subject_names] = self.read_images(self.training_data_path, self.image_size)
 
         if len(labels) == 0:
             self.doRun = False
-            raise Exception("No images in folder %s This is bad!" % self.training_data_path)
+            raise Exception(">> No images in folder %s This is bad!" % self.training_data_path)
 
         # Zip us a {label, name} dict from the given data:
         list_of_labels = list(xrange(max(labels) + 1))
@@ -444,7 +442,7 @@ class Trainer(object):
 
 
 if __name__ == '__main__':
-    usage = "usage: %prog [options] model_filename"
+    usage = "Usage: %prog [options] model_filename"
     # Add options for training, resizing, validation and setting the camera id:
     parser = optparse.OptionParser(usage=usage)
     group_mw = optparse.OptionGroup(parser, 'Middleware Options')
@@ -499,7 +497,7 @@ if __name__ == '__main__':
         mkdir_p(os.path.basename(options.model_path))
         mkdir_p(options.training_data_path)
     except Exception, e:
-        print "Error: " + e
+        print ">> Error: " + e
         sys.exit()
 
     if options.middleware_type == "rsb":
@@ -507,5 +505,5 @@ if __name__ == '__main__':
     elif options.middleware_type == "ros":
         Trainer(options, ROSConnector()).run()
     else:
-        print "Error! Middleware %s unknown." % options.middleware_type
+        print ">> Error! Middleware %s not supported" % options.middleware_type
         sys.exit()
