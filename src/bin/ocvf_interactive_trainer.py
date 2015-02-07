@@ -200,7 +200,7 @@ if __name__ == '__main__':
                         dest="middleware_type", type="string", default="rsb",
                         help="Type of middleware to use. Currently supported: 'rsb' and 'ros' (default: %default).")
     group_mw.add_option("-s", "--image-source", action="store",
-                        dest="image_source", default="/video/",
+                        dest="image_source", default="/rsbopencv/ipl",
                         help="Source (topic/scope) from which to get video images (default: %default).")
     group_mw.add_option("-e", "--re-train-source", action="store",
                         dest="retrain_source", default="/ocvfacerec/trainer/retrain",
@@ -209,8 +209,7 @@ if __name__ == '__main__':
                         dest="restart_target", default="/ocvfacerec/recognizer/restart",
                         help="Target (topic/scope) to where a simple restart message is sent (basic string, containing 'restart') (default: %default).")
 
-    group_io.add_option("-m", "--model-path", action="store",
-                        dest="model_path", default="/tmp/model.pkl",
+    group_io.add_option("-m", "--model-path", action="store", dest="model_path", default="/tmp/model.pkl",
                         help="Storage path for the model file (default: %default).")
     group_io.add_option("-t", "--training-path", action="store",
                         dest="training_data_path", default="/tmp/training_data",
