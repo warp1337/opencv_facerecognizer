@@ -76,7 +76,7 @@ class Recognizer(object):
                 draw_str(imgout, (x0 - 20, y0 - 20), "Distance " + "%1.2f" % distance)
             cv2.imshow('OCVFACEREC LOCAL CAMERA', imgout)
             key = cv2.waitKey(self.wait)
-            if 0xFF == ord('q'):
+            if 'q' == chr(key & 255):
                 print "<q> Pressed. Exiting."
                 break
 
