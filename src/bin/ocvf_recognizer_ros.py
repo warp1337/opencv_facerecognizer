@@ -55,6 +55,7 @@ from ocvfacerec.facerec.serialization import load_model
 from ocvfacerec.facedet.detector import CascadedDetector
 from ocvfacerec.trainer.thetrainer import ExtendedPredictableModel
 
+
 class RosPeople:
     def __init__(self):
         self.publisher = rospy.Publisher('ocvfacerec/ros/people', People, queue_size=1)
