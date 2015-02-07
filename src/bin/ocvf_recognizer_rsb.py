@@ -109,8 +109,10 @@ class Recognizer(object):
         while self.doRun:
             # GetLastImage is blocking so we won't get a "None" Image
             image = self.lastImage.get(True)
-            img = cv2.resize(image, (image.shape[1] / 2, image.shape[0] / 2), interpolation=cv2.INTER_CUBIC)
-            imgout = img.copy()
+            # This should not be resized with a fixed rate, this should be rather configured by the sender
+            # i.e. by sending smaller images. Don't fiddle with input data in two places.
+            # img = cv2.resize(image, (image.shape[1] / 2, image.shape[0] / 2), interpolation=cv2.INTER_CUBIC)
+            imgout = image.copy()
             for i, r in enumerate(self.detector.detect(img)):
                 x0, y0, x1, y1 = r
                 # (1) Get face, (2) Convert to grayscale & (3) resize to image_size:
@@ -148,7 +150,6 @@ class Recognizer(object):
         self.listener.deactivate()
         self.restart_listener.deactivate()
         # informer.deactivate()
-        print ">> Exiting"
 
 if __name__ == '__main__':
     from optparse import OptionParser
