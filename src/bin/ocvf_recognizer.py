@@ -88,8 +88,8 @@ if __name__ == '__main__':
     usage = "Usage: %prog [options] model_filename"
     # Add options for training, resizing, validation and setting the camera id:
     parser = OptionParser(usage=usage)
-    parser.add_option("-r", "--resize", action="store", type="string", dest="size", default="100x100",
-                      help="Resizes the given dataset to a given size in format [width]x[height] (default: 100x100).")
+    parser.add_option("-r", "--resize", action="store", type="string", dest="size", default="70x70",
+                      help="Resizes the given dataset to a given size in format [width]x[height] (default: 70x70).")
     parser.add_option("-v", "--validate", action="store", dest="numfolds", type="int", default=None,
                       help="Performs a k-fold cross validation on the dataset, if given (default: None).")
     parser.add_option("-t", "--train", action="store", dest="dataset", type="string", default=None,
@@ -99,8 +99,8 @@ if __name__ == '__main__':
     parser.add_option("-c", "--cascade", action="store", dest="cascade_filename",
                       default="haarcascade_frontalface_alt2.xml",
                       help="Sets the path to the Haar Cascade used for the face detection part (default: haarcascade_frontalface_alt2.xml).")
-    parser.add_option("-w", "--wait", action="store", dest="wait_time", default=100, type="int",
-                      help="Amount of time (in ms) to sleep between face identifaction runs (frames). Default is 100 ms")
+    parser.add_option("-w", "--wait", action="store", dest="wait_time", default=20, type="int",
+                      help="Amount of time (in ms) to sleep between face identifaction runs (frames). Default is 20 ms")
     (options, args) = parser.parse_args()
     print "\n"
     # Check if a model name was passed:
@@ -146,6 +146,6 @@ if __name__ == '__main__':
         sys.exit(1)
     # Now it's time to finally start the Recognizerlication! It simply get's the model
     # and the image size the incoming webcam or video images are resized to:
-    print ">> Using Local Camera " + options.camera_id
+    print ">> Using Local Camera " + "/dev/video" + str(options.camera_id)
     Recognizer(model=model, camera_id=options.camera_id, cascade_filename=options.cascade_filename, run_local=True, wait=options.wait_time).run()
 
