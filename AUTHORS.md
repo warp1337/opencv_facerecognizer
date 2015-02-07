@@ -8,6 +8,6 @@ There is nothing like a minimal contribution, so if you have
 contributed to the library, then feel free to add your 
 name to the list:
 
-* Philipp Wagner [http://bytefish.de](http://bytefish.de)
+* Philipp Wagner [bytefish[at]gmx[dot]de]
 * Florian Lier [flier[at]techfak.uni-bielefeld.de]
 * Norman Köster [nkoester[at]techfak.uni-bielefeld.de]
