@@ -215,6 +215,6 @@ if __name__ == '__main__':
     while x.restart:
         time.sleep(10)
         model = load_model(model_filename)
-        x = Recognizer(model=model, camera_id=options.camera_id, cascade_filename=options.cascade_filename, run_local=False, inscope=options.rsb_source, wait=options.wait_time)
+        x = Recognizer(model=model, camera_id=None, cascade_filename=options.cascade_filename, run_local=False, inscope=options.rsb_source, wait=options.wait_time)
         x.run_distributed()
 
