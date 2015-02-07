@@ -71,6 +71,7 @@ class Recognizer(object):
         self.restart = False
 
         def signal_handler(signal, frame):
+            sys.stdout.flush()
             print ">> RSB Exiting"
             self.doRun = False
 
