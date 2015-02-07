@@ -1,17 +1,21 @@
-# Copyright (c) 2012. Philipp Wagner <bytefish[at]gmx[dot]de> and
-# Florian Lier <flier[at]techfak.uni-bielefeld.de>
+# Copyright (c) 2015.
+# Philipp Wagner <bytefish[at]gmx[dot]de> and
+# Florian Lier <flier[at]techfak.uni-bielefeld.de> and
+# Norman Koester <nkoester[at]techfak.uni-bielefeld.de>
+#
+#
 # Released to public domain under terms of the BSD Simplified license.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
-# * Redistributions of source code must retain the above copyright
-#          notice, this list of conditions and the following disclaimer.
-#        * Redistributions in binary form must reproduce the above copyright
-#          notice, this list of conditions and the following disclaimer in the
-#          documentation and/or other materials provided with the distribution.
-#        * Neither the name of the organization nor the names of its contributors
-#          may be used to endorse or promote products derived from this software
-#          without specific prior written permission.
+#   * Redistributions of source code must retain the above copyright
+#     notice, this list of conditions and the following disclaimer.
+#   * Redistributions in binary form must reproduce the above copyright
+#     notice, this list of conditions and the following disclaimer in the
+#     documentation and/or other materials provided with the distribution.
+#   * Neither the name of the organization nor the names of its contributors
+#     may be used to endorse or promote products derived from this software
+#     without specific prior written permission.
 #
 #    See <http://www.opensource.org/licenses/bsd-license>
 
@@ -28,15 +32,13 @@
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-'''
-This module contais some common routines used by other samples.
-'''
 
-import numpy as np
-import cv2
 import os
-from contextlib import contextmanager
+import cv2
+import errno
+import numpy as np
 import itertools as it
+from contextlib import contextmanager
 
 image_extensions = ['.bmp', '.jpg', '.jpeg', '.png', '.tif', '.tiff', '.pbm', '.pgm', '.ppm']
 
@@ -270,3 +272,77 @@ def draw_keypoints(vis, keypoints, color=(0, 255, 255)):
         x, y = kp.pt
         cv2.circle(vis, (int(x), int(y)), 2, color)
 
+
+def detect_face(image, face_cascade, return_image=False):
+    # This function takes a grey scale cv image and finds
+    # the patterns defined in the haarcascade function
+    min_size = (20, 20)
+    haar_scale = 1.1
+    min_neighbors = 5
+    haar_flags = 0
+
+    # Equalize histogram
+    cv2.EqualizeHist(image, image)
+
+    # Detect faces
+    faces = cv2.HaarDetectObjects(image, face_cascade, cv2.CreateMemStorage(0), haar_scale, min_neighbors, haar_flags,
+                                  min_size)
+
+    # If faces are found
+    if faces and return_image:
+        for ((x, y, w, h), n) in faces:
+            # Convert bounding box to two CvPoints
+            pt1 = (int(x), int(y))
+            pt2 = (int(x + w), int(y + h))
+            cv2.Rectangle(image, pt1, pt2, cv2.RGB(255, 0, 0), 5, 8, 0)
+
+    if return_image:
+        return image
+    else:
+        return faces
+
+
+def pil2_cvgrey(pil_im):
+    # Convert a PIL image to a greyscale cv image
+    # from: http://pythonpath.wordpress.com/2012/05/08/pil-to-opencv-image/
+    pil_im = pil_im.convert('L')
+    cv_im = cv2.CreateImageHeader(pil_im.size, cv2.IPL_DEPTH_8U, 1)
+    cv2.SetData(cv_im, pil_im.tostring(), pil_im.size[0])
+    return cv_im
+
+
+def img_crop(image, crop_box, box_scale=1):
+    # Crop a PIL image with the provided box [x(left), y(upper), w(width), h(height)]
+
+    # Calculate scale factors
+    x_delta = max(crop_box[2] * (box_scale - 1), 0)
+    y_delta = max(crop_box[3] * (box_scale - 1), 0)
+
+    # Convert cv box to PIL box [left, upper, right, lower]
+    pil_box = [crop_box[0] - x_delta, crop_box[1] - y_delta, crop_box[0] + crop_box[2] + x_delta,
+               crop_box[1] + crop_box[3] + y_delta]
+
+    return image.crop(pil_box)
+
+
+def face_crop_single_image(pil_image, face_cascade, box_scale=1):
+    cv_im = pil2_cvgrey(pil_image)
+    faces = detect_face(cv_im, face_cascade)
+    face_list = []
+
+    cropped_image = None
+    if faces:
+        for face in faces:
+            cropped_image = img_crop(pil_image, face[0], box_scale=box_scale)
+            face_list.append(cropped_image)
+    return cropped_image
+
+
+def mkdir_p(path):
+    try:
+        os.makedirs(path)
+    except OSError as exc:  # Python >2.5
+        if exc.errno == errno.EEXIST and os.path.isdir(path):
+            pass
+        else:
+            raise

@@ -31,3 +31,21 @@
 # LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
+
+from ocvfacerec.mwconnector import MiddlewareConnector
+
+
+class ROSConnector(MiddlewareConnector):
+    # TODO Implement
+    def __init__(self):
+        raise Exception("Not Implemented yet ...")
+        pass
+
+    def activate(self, source):
+        pass
+
+    def deactivate(self):
+        pass
+
+    def get_image(self):
+        pass

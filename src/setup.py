@@ -1,4 +1,5 @@
-# Copyright (c) 2012. Philipp Wagner <bytefish[at]gmx[dot]de> and
+# Copyright (c) 2012.
+# Philipp Wagner <bytefish[at]gmx[dot]de> and
 # Florian Lier <flier[at]techfak.uni-bielefeld.de>
 # Released to public domain under terms of the BSD Simplified license.
 #
@@ -60,8 +61,8 @@ setup(
         'Operating System :: MacOS',
     ],
     include_package_data=True,
-    packages=['ocvfacerec', 'ocvfacerec/facedet', 'ocvfacerec/facerec', 'ocvfacerec/helper'],
-    scripts=["bin/ocvf_recognizer.py", "bin/ocvf_recognizer_ros.py", "bin/ocvf_recognizer_rsb.py", "bin/ocvf_distributed_trainer.py"],
+    packages=['ocvfacerec', 'ocvfacerec/facedet', 'ocvfacerec/facerec', 'ocvfacerec/helper', 'ocvfacerec/trainer', 'ocvfacerec/mwconnector'],
+    scripts=["bin/ocvf_recognizer.py", "bin/ocvf_recognizer_ros.py", "bin/ocvf_recognizer_rsb.py", "bin/ocvf_interactive_trainer.py"],
     # Due to heavy dependencies (liblas, ATLAS, etc..) it is easier to install 'SciPy >= 0.14.0'
     # and PIL >= 1.1.7 using your Package Manager, i.e., sudo apt-get install python-scipy python-imaging-*
     install_requires=['NumPy >=1.8.1', 'matplotlib >= 1.2.0']
