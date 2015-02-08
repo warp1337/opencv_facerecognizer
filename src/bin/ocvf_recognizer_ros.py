@@ -153,6 +153,7 @@ class Recognizer(object):
         image_subscriber   = rospy.Subscriber(image_topic, Image, self.image_callback, queue_size=1)
         restart_subscriber = rospy.Subscriber(restart_topic, String, self.restart_callback, queue_size=1)
         start_new_thread(rospy.spin())
+        print ">> Recognizer is running"
         while self.doRun:
             time.sleep(0.01)
             pass
