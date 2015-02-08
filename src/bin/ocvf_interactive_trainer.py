@@ -95,7 +95,7 @@ class Trainer(object):
             print ">> ERROR: ", e
 
         self.re_train()
-        print ">> Ready.\n"
+        print ">> Ready."
         while self.doRun:
             try:
                 train_name = self.middleware.wait_for_start_training()
@@ -110,7 +110,7 @@ class Trainer(object):
                     self.restart_classifier()
                     self.counter += 1
                 else:
-                    print ">> Unable to collect enough images"
+                    print ">> Unable to Collect Enough Images"
 
                 print ">> Done Collecting\n"
 
@@ -124,7 +124,7 @@ class Trainer(object):
         print ">> Done"
 
     def record_images(self, train_name):
-        print ">> Recording %d images from %s..." % (self.training_image_number, self.image_source)
+        print ">> Recording %d Images From %s..." % (self.training_image_number, self.image_source)
         person_image_path = os.path.join(self.training_data_path, train_name)
         mkdir_p(person_image_path)
         num_mugshots = 0
@@ -168,9 +168,9 @@ class Trainer(object):
         print ">> Re-Training is running..."
         walk_result = [x[0] for x in os.walk(self.training_data_path)][1:]
         if len(walk_result) > 0:
-            print ">> Persons available for training: ", ", ".join([x.split("/")[-1] for x in walk_result])
+            print ">> Persons Available For Re-Training: ", ", ".join([x.split("/")[-1] for x in walk_result])
         else:
-            print ">> No persons found for training"
+            print ">> No Persons Found for Re-Training"
             return
 
         trainer = TheTrainer(self.training_data_path, self.image_size, self.model_path, _numfolds=options.numfolds)
@@ -179,12 +179,12 @@ class Trainer(object):
 
         if len(labels) == 0:
             self.doRun = False
-            raise Exception(">> No images in folder %s" % self.training_data_path)
+            raise Exception(">> No Images in Folder %s" % self.training_data_path)
         else:
             trainer.train()
 
     def restart_classifier(self):
-        print ">> Restarting classifier..."
+        print ">> Restarting Recognizer..."
         self.middleware.restart_classifier()
 
 
