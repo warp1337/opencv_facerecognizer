@@ -136,7 +136,6 @@ class TheTrainer():
         return folder_names
 
     def train(self):
-        print "\n"
         # Check if the given dataset exists:
         if not os.path.exists(self.dataset):
             print ">> [Error] No Dataset Found at '%s'." % self.dataset
