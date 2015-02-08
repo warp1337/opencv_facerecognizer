@@ -39,6 +39,7 @@ import sys
 import time
 import rospy
 import roslib
+import signal
 from optparse import OptionParser
 from thread import start_new_thread
 
@@ -85,6 +86,12 @@ class Recognizer(object):
             sys.exit(1)
         else:
             self.bridge = CvBridge()
+
+        def signal_handler(signal, frame):
+            print ">> ROS Exiting"
+            self.doRun = False
+
+        signal.signal(signal.SIGINT, signal_handler)
 
     def image_callback(self, ros_data):
         try:
