@@ -69,7 +69,7 @@ class Recognizer(object):
         self.detector = CascadedDetector(cascade_fn=cascade_filename, minNeighbors=5, scaleFactor=1.1)
 
         if run_local:
-            print ">> [Error] Run local selected in ROS based recognizer"
+            print ">> Error Run local selected in RSB based Recognizer"
             sys.exit(1)
 
         self.doRun = True
@@ -91,7 +91,7 @@ class Recognizer(object):
         self.lastImage = Queue(1)
         self.restart_listener = rsb.createListener(self.notification_scope)
         self.last_restart_request = Queue(1)
-        # This must be set at last
+        # This must be set at last!
         rsb.setDefaultParticipantConfig(rsb.ParticipantConfig.fromDefaultSources())
 
     def add_last_image(self, image_event):
@@ -112,6 +112,7 @@ class Recognizer(object):
         print ">> Activating RSB listener"
         self.listener.addHandler(self.add_last_image)
         self.restart_listener.addHandler(self.add_restart_request)
+        # TODO # TODO Implement Result Informer (ClassificationResult)
         informer = rsb.createInformer("/ocvfacerec/rsb/people", dataType=ClassificationResult)
         while self.doRun:
             # GetLastImage is blocking so we won't get a "None" Image
@@ -139,8 +140,8 @@ class Recognizer(object):
                 # Draw the predicted name (folder name...):
                 draw_str(imgout, (x0 - 20, y0 - 40), "Label " + self.model.subject_names[predicted_label])
                 draw_str(imgout, (x0 - 20, y0 - 20), "Distance " + "%1.2f" % distance)
-            cv2.imshow('OCVFACEREC RSB CAMERA (Fixed Scale 320x240)', imgout)
-            # TODO Implement Result Informer
+            cv2.imshow('OCVFACEREC < RSB STREAM', imgout)
+            # TODO Implement Result Informer (ClassificationResult)
             # cr   = ClassificationResult()
             # crwp = ClassificationResult.ClassWithProbability()
             # cr.decided_class = bytes(predicted_label)

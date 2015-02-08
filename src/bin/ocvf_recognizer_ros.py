@@ -36,9 +36,11 @@
 import os
 import cv2
 import sys
+import time
 import rospy
 import roslib
 from optparse import OptionParser
+from thread import start_new_thread
 
 
 # ROS IMPORTS
@@ -70,10 +72,13 @@ class Recognizer(object):
         self.wait = wait
         self.detector = CascadedDetector(cascade_fn=cascade_filename, minNeighbors=5, scaleFactor=1.1)
         if run_local:
-            print ">> [Error] Run local selected in ROS based recognizer"
+            print ">> Error: Run local selected in ROS based Recognizer"
             sys.exit(1)
         else:
             self.bridge = CvBridge()
+
+        self.doRun = True
+        self.restart = False
 
     def callback(self, ros_data):
         try:
@@ -127,19 +132,22 @@ class Recognizer(object):
             for x in persons:
                 msg.people.append(x)
             self.rp.publisher.publish(msg)
-        cv2.imshow('OCVFACEREC ROS CAMERA', imgout)
+        cv2.imshow('OCVFACEREC < ROS STREAM', imgout)
         cv2.waitKey(self.wait)
 
     def run_distributed(self, topic):
         subscriber = rospy.Subscriber(topic, Image, self.callback, queue_size=1)
-        rospy.spin()
+        start_new_thread(rospy.spin())
+        while self.doRun:
+            time.sleep(0.01)
+            pass
 
 
 if __name__ == '__main__':
     # model.pkl is a pickled (hopefully trained) PredictableModel, which is
     # used to make predictions. You can learn a model yourself by passing the
     # parameter -d (or --dataset) to learn the model from a given dataset.
-    usage = "usage: %prog [options] model_filename"
+    usage = "Usage: %prog [options] model_filename"
     # Add options for training, resizing, validation and setting the camera id:
     parser = OptionParser(usage=usage)
     parser.add_option("-r", "--resize", action="store", type="string", dest="size", default="70x70",
@@ -157,20 +165,20 @@ if __name__ == '__main__':
     (options, args) = parser.parse_args()
     # Check if a model name was passed:
     if options.ros_source is None:
-        print ">> [Error] No ROS Topic provided use i.e. --ros-source=/usb_cam/image_raw"
+        print ">> Error: No ROS Topic provided use i.e. --ros-source=/usb_cam/image_raw"
         sys.exit(1)
     if len(args) == 0:
-        print ">> [Error] No prediction model was given."
+        print ">> Error: No prediction model was given."
         sys.exit(1)
     # This model will be used (or created if the training parameter (-t, --train) exists:
     model_filename = args[0]
     # Check if the given model exists, if no dataset was passed:
     if (options.dataset is None) and (not os.path.exists(model_filename)):
-        print ">> [Error] No prediction model found at '%s'." % model_filename
+        print ">> Error: No prediction model found at '%s'." % model_filename
         sys.exit(1)
     # Check if the given (or default) cascade file exists:
     if not os.path.exists(options.cascade_filename):
-        print ">> [Error] No Cascade File found at '%s'." % options.cascade_filename
+        print ">> Error: No Cascade File found at '%s'." % options.cascade_filename
         sys.exit(1)
     # We are resizing the images to a fixed size, as this is neccessary for some of
     # the algorithms, some algorithms like LBPH don't have this requirement. To 
@@ -179,7 +187,7 @@ if __name__ == '__main__':
     try:
         image_size = (int(options.size.split("x")[0]), int(options.size.split("x")[1]))
     except Exception, e:
-        print ">> [Error] Unable to parse the given image size '%s'. Please pass it in the format [width]x[height]!" % options.size
+        print ">> Error: Unable to parse the given image size '%s'. Please pass it in the format [width]x[height]!" % options.size
         sys.exit(1)
     # We got a dataset to learn a new model from:
     if options.dataset:
@@ -191,7 +199,7 @@ if __name__ == '__main__':
     # We operate on an ExtendedPredictableModel. Quit the Recognizerlication if this
     # isn't what we expect it to be:
     if not isinstance(model, ExtendedPredictableModel):
-        print ">> [Error] The given model is not of type '%s'." % "ExtendedPredictableModel"
+        print ">> Error: The given model is not of type '%s'." % "ExtendedPredictableModel"
         sys.exit(1)
 
     # Now it's time to finally start the Recognizerlication! It simply get's the model
@@ -201,5 +209,12 @@ if __name__ == '__main__':
 
     # Init ROS People Publisher
     rp = RosPeople()
-    Recognizer(model=model, cascade_filename=options.cascade_filename, run_local=False,
-               wait=options.wait_time, rp=rp).run_distributed(options.ros_source)
+    x = Recognizer(model=model, cascade_filename=options.cascade_filename, run_local=False,
+                   wait=options.wait_time, rp=rp)
+    x.run_distributed()
+    while x.restart:
+        time.sleep(1)
+        model = load_model(model_filename)
+        x = Recognizer(model=model, cascade_filename=options.cascade_filename, run_local=False,
+                       wait=options.wait_time, rp=rp)
+        x.run_distributed()

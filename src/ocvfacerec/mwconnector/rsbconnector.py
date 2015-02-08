@@ -68,17 +68,14 @@ class RSBConnector(MiddlewareConnector):
     def activate(self, image_source, retrain_source, restart_target):
         registerGlobalConverter(IplimageConverter())
         rsb.setDefaultParticipantConfig(rsb.ParticipantConfig.fromDefaultSources())
-
         # Listen to Image Events
         self.image_listener = rsb.createListener(image_source)
         self.lastImage = Queue(1)
         self.image_listener.addHandler(self.add_last_image)
-
         # Listen to Re-Train events with a Person Label
         self.training_start = rsb.createListener(retrain_source)
         self.last_train = Queue(10)
         self.training_start.addHandler(self.add_last_train)
-
         # Publisher to Restart Recognizer
         self.restart_publisher = rsb.createInformer(restart_target, dataType=str)
 

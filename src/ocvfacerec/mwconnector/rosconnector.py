@@ -32,7 +32,7 @@
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-from ocvfacerec.mwconnector import MiddlewareConnector
+from ocvfacerec.mwconnector.abtractconnector import MiddlewareConnector
 
 
 class ROSConnector(MiddlewareConnector):
