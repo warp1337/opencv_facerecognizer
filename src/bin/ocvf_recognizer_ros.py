@@ -69,18 +69,17 @@ class RosPeople:
 class Recognizer(object):
     def __init__(self, model, cascade_filename, run_local, wait, rp):
         self.rp = rp
-        self.model = model
         self.wait = wait
+        self.doRun = True
+        self.model = model
+        self.restart = False
+        self.ros_restart_request = False
         self.detector = CascadedDetector(cascade_fn=cascade_filename, minNeighbors=5, scaleFactor=1.1)
         if run_local:
             print ">> Error: Run local selected in ROS based Recognizer"
             sys.exit(1)
         else:
             self.bridge = CvBridge()
-
-        self.doRun = True
-        self.restart = False
-        self.ros_restart_request = False
 
     def image_callback(self, ros_data):
         try:
@@ -146,8 +145,8 @@ class Recognizer(object):
             pass
 
     def restart_callback(self, ros_data):
-        print ">> Received Restart Request %s" % str(ros_data.data)
         if "restart" in str(ros_data):
+            print ">> Received Restart Request %s" % str(ros_data.data)
             self.ros_restart_request = True
 
     def run_distributed(self, image_topic, restart_topic):
