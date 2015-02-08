@@ -35,6 +35,7 @@
 # STD Imports
 import os
 import sys
+import cv
 import cv2
 import Image
 import signal
@@ -133,6 +134,7 @@ class Trainer(object):
         abort_threshold = 40
         abort_count = 0
         switch = False
+        cascade = cv.Load(self.cascade_filename)
         print ">>\t",
         while num_mugshots < self.training_image_number and not self.abort_training and abort_count < abort_threshold:
 
@@ -144,8 +146,7 @@ class Trainer(object):
                 continue
 
             im = Image.fromarray(cv2.cvtColor(input_image, cv2.COLOR_BGR2RGB))
-            cc = cv2.CascadeClassifier(self.cascade_filename)
-            cropped_image = face_crop_single_image(im, self.cascade_filename)
+            cropped_image = face_crop_single_image(im, cascade)
 
             ok_shot = False
             if cropped_image:
