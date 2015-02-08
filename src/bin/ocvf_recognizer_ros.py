@@ -162,6 +162,7 @@ class Recognizer(object):
             self.ros_restart_request = True
 
     def run_distributed(self, image_topic, restart_topic):
+        print ">> Activating ROS Subscriber"
         image_subscriber   = rospy.Subscriber(image_topic, Image, self.image_callback, queue_size=1)
         restart_subscriber = rospy.Subscriber(restart_topic, String, self.restart_callback, queue_size=1)
         # print ">> Recognizer is running"
