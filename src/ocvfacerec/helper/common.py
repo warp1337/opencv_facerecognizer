@@ -283,11 +283,11 @@ def detect_face(image, face_cascade, return_image=False):
     haar_flags = 0
 
     # Equalize histogram
-    cv2.EqualizeHist(image, image)
+    cv.EqualizeHist(image, image)
 
     # Detect faces
-    faces = cv2.HaarDetectObjects(image, face_cascade, cv2.CreateMemStorage(0), haar_scale, min_neighbors, haar_flags,
-                                  min_size)
+    faces = cv.HaarDetectObjects(image, face_cascade, cv2.CreateMemStorage(0), haar_scale, min_neighbors, haar_flags,
+                                 min_size)
 
     # If faces are found
     if faces and return_image:
