@@ -96,13 +96,14 @@ class Recognizer(object):
     def image_callback(self, ros_data):
         try:
             cv_image = self.bridge.imgmsg_to_cv2(ros_data, "bgr8")
-        except Exception, e:
-            print e
+        except Exception, ex:
+            print ex
             return
         # Resize the frame to half the original size for speeding up the detection process.
         # In ROS we can control the size, so we are sending a 320*240 image by default.
+        img = cv2.resize(cv_image, (320, 240), interpolation=cv2.INTER_CUBIC)
         # img = cv2.resize(cv_image, (cv_image.shape[1] / 2, cv_image.shape[0] / 2), interpolation=cv2.INTER_CUBIC)
-        img = cv_image
+        # img = cv_image
         imgout = img.copy()
         # Remember the Persons found in current image
         persons = []
