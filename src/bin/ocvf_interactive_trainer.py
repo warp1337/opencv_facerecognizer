@@ -145,7 +145,7 @@ class Trainer(object):
 
             im = Image.fromarray(cv2.cvtColor(input_image, cv2.COLOR_BGR2RGB))
             cc = cv2.CascadeClassifier(self.cascade_filename)
-            cropped_image = face_crop_single_image(im, cc)
+            cropped_image = face_crop_single_image(im, self.cascade_filename)
 
             ok_shot = False
             if cropped_image:
