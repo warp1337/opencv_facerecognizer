@@ -72,7 +72,7 @@ class Trainer(object):
         self.doRun = True
 
         def signal_handler(signal, frame):
-            print ">> Exiting..."
+            print ">> Exiting.."
             self.doRun = False
             self.abort_training = True
 
@@ -166,7 +166,7 @@ class Trainer(object):
             return True
 
     def re_train(self):
-        print ">> Re-Training is running..."
+        print ">> Re-Training is running"
         walk_result = [x[0] for x in os.walk(self.training_data_path)][1:]
         if len(walk_result) > 0:
             print ">> Persons Available for Re-Training ", ", ".join([x.split("/")[-1] for x in walk_result])
