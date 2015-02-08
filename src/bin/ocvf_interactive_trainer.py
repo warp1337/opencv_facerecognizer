@@ -133,7 +133,7 @@ class Trainer(object):
         abort_threshold = 80
         abort_count = 0
         switch = False
-        print ">> Sampling ",
+        print ">> Sampling...",
         while num_mugshots < self.training_image_number and not self.abort_training and abort_count < abort_threshold:
 
             # Take every second frame to add some more variance
