@@ -286,7 +286,7 @@ def detect_face(image, face_cascade, return_image=False):
     cv.EqualizeHist(image, image)
 
     # Detect faces
-    faces = cv.HaarDetectObjects(image, face_cascade, cv2.CreateMemStorage(0), haar_scale, min_neighbors, haar_flags,
+    faces = cv.HaarDetectObjects(image, face_cascade, cv.CreateMemStorage(0), haar_scale, min_neighbors, haar_flags,
                                  min_size)
 
     # If faces are found
@@ -295,7 +295,7 @@ def detect_face(image, face_cascade, return_image=False):
             # Convert bounding box to two CvPoints
             pt1 = (int(x), int(y))
             pt2 = (int(x + w), int(y + h))
-            cv2.Rectangle(image, pt1, pt2, cv2.RGB(255, 0, 0), 5, 8, 0)
+            cv.Rectangle(image, pt1, pt2, cv.RGB(255, 0, 0), 5, 8, 0)
 
     if return_image:
         return image
