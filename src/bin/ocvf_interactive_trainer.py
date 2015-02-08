@@ -132,7 +132,7 @@ class Trainer(object):
         person_image_path = os.path.join(self.training_data_path, train_name)
         mkdir_p(person_image_path)
         num_mugshots = 0
-        abort_threshold = 40
+        abort_threshold = 80
         abort_count = 0
         switch = False
         cascade = cv.Load(self.cascade_filename)
