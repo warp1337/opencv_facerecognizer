@@ -41,6 +41,7 @@ import rsb
 import rstsandbox
 from rsb.converter import ProtocolBufferConverter
 from rsb.converter import registerGlobalConverter
+from rsb.converter import registerConverter
 from rstconverters.opencv import IplimageConverter
 
 # OCVF Imports
@@ -66,20 +67,20 @@ class RSBConnector(MiddlewareConnector):
         self.last_train.put(retrain_event.data, False)
 
     def activate(self, image_source, retrain_source, restart_target):
-        registerGlobalConverter(IplimageConverter())
+        registerConverter(IplimageConverter())
         rsb.setDefaultParticipantConfig(rsb.ParticipantConfig.fromDefaultSources())
 
-        # Listen to image events
+        # Listen to Image Events
         self.image_listener = rsb.createListener(image_source)
         self.lastImage = Queue(1)
         self.image_listener.addHandler(self.add_last_image)
 
-        # Listen to re-train events with a name
+        # Listen to Re-Train events with a Person Label
         self.training_start = rsb.createListener(retrain_source)
         self.last_train = Queue(10)
         self.training_start.addHandler(self.add_last_train)
 
-        # Publisher to restart recogniser
+        # Publisher to Restart Recognizer
         self.restart_publisher = rsb.createInformer(restart_target, dataType=str)
 
     def deactivate(self):
