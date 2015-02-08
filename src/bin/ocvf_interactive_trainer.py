@@ -77,11 +77,11 @@ class Trainer(object):
         signal.signal(signal.SIGINT, signal_handler)
 
     def run(self):
-        print ">> Path to training data images: %s " % self.training_data_path
-        print ">> Path to model: %s" % self.model_path
-        print ">> Middleware: %s" % self.middleware_type
-        print ">> Camera source: %s " % self.image_source
-        print ">> Re-Train command scope %s" % self.retrain_source
+        print ">> Middleware: %s" % self.middleware_type.upper()
+        print ">> Path to Training Images: %s " % self.training_data_path
+        print ">> Path to Model File: %s" % self.model_path
+        print ">> Remote Camera Source: %s " % self.image_source
+        print ">> Re-Train Command Scope %s\n" % self.retrain_source
 
         try:
             self.middleware.activate(self.image_source, self.retrain_source, self.restart_target)
@@ -104,7 +104,7 @@ class Trainer(object):
                 continue
 
             try:
-                print "Training for '%s' (run %d)" % (train_name, self.counter)
+                print ">> Training for '%s' (run %d)" % (train_name, self.counter)
                 if self.record_images(train_name):
                     self.re_train()
                     self.restart_classifier()
@@ -112,14 +112,14 @@ class Trainer(object):
                 else:
                     print ">> Unable to collect enough images"
 
-                print ">> Done.\n"
+                print ">> Done Collecting\n"
 
             except Exception, e:
                 print ">> ERROR: ", e
                 traceback.print_exc()
                 continue
 
-        print ">> Deactivating middleware ..."
+        print ">> Deactivating Middleware ..."
         self.middleware.deactivate()
         print ">> Done"
 
