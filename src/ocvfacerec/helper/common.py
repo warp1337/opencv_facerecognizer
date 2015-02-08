@@ -34,6 +34,7 @@
 
 
 import os
+import cv
 import cv2
 import errno
 import numpy as np
@@ -306,8 +307,8 @@ def pil2_cvgrey(pil_im):
     # Convert a PIL image to a greyscale cv image
     # from: http://pythonpath.wordpress.com/2012/05/08/pil-to-opencv-image/
     pil_im = pil_im.convert('L')
-    cv_im = cv2.CreateImageHeader(pil_im.size, cv2.IPL_DEPTH_8U, 1)
-    cv2.SetData(cv_im, pil_im.tostring(), pil_im.size[0])
+    cv_im = cv.CreateImageHeader(pil_im.size, cv.IPL_DEPTH_8U, 1)
+    cv.SetData(cv_im, pil_im.tostring(), pil_im.size[0])
     return cv_im
 
 
