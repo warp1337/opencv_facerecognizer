@@ -58,7 +58,7 @@ class Trainer(object):
         self.middleware_type       = _options.middleware_type
         self.training_data_path    = _options.training_data_path
         self.training_image_number = _options.training_image_number
-        self.cascade_filename      = cv2.CascadeClassifier(_options.cascade_filename)
+        self.cascade_filename      = _options.cascade_filename
         try:
             self.image_size = (int(_options.image_size.split("x")[0]), int(_options.image_size.split("x")[1]))
         except Exception, e:
@@ -144,7 +144,8 @@ class Trainer(object):
                 continue
 
             im = Image.fromarray(cv2.cvtColor(input_image, cv2.COLOR_BGR2RGB))
-            cropped_image = face_crop_single_image(im, self.cascade_filename)
+            cc = cv2.CascadeClassifier(self.cascade_filename)
+            cropped_image = face_crop_single_image(im, cc)
 
             ok_shot = False
             if cropped_image:
