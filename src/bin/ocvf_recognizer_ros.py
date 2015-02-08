@@ -38,7 +38,8 @@ import cv2
 import sys
 import rospy
 import roslib
-import logging
+from optparse import OptionParser
+
 
 # ROS IMPORTS
 from cv_bridge import CvBridge
@@ -135,7 +136,6 @@ class Recognizer(object):
 
 
 if __name__ == '__main__':
-    from optparse import OptionParser
     # model.pkl is a pickled (hopefully trained) PredictableModel, which is
     # used to make predictions. You can learn a model yourself by passing the
     # parameter -d (or --dataset) to learn the model from a given dataset.

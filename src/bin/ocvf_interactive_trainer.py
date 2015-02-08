@@ -62,7 +62,7 @@ class Trainer(object):
         try:
             self.image_size = (int(_options.image_size.split("x")[0]), int(_options.image_size.split("x")[1]))
         except Exception, e:
-            print ">> [Error] Unable to parse the given image size '%s'. Please pass it in the format [width]x[height]!" \
+            print ">> Error: Unable to parse the given image size '%s'. Please pass it in the format [width]x[height]!" \
                   % _options.image_size
             sys.exit(1)
 
@@ -88,13 +88,13 @@ class Trainer(object):
         try:
             self.middleware.activate(self.image_source, self.retrain_source, self.restart_target)
         except Exception, e:
-            print ">> [ERROR] can't activate middleware! "
+            print ">> Error: Can't Activate Middleware "
             traceback.print_exc()
 
         try:
             self.middleware.activate(self.image_source, self.retrain_source, self.restart_target)
         except Exception, e:
-            print ">> ERROR: ", e
+            print ">> Error: ", e
 
         self.re_train()
         print ">> Ready."
@@ -117,11 +117,11 @@ class Trainer(object):
                 print ">> Done Collecting\n"
 
             except Exception, e:
-                print ">> ERROR: ", e
+                print ">> Error: ", e
                 traceback.print_exc()
                 continue
 
-        print ">> Deactivating Middleware..."
+        print ">> Deactivating Middleware"
         self.middleware.deactivate()
         print ">> Done"
 
