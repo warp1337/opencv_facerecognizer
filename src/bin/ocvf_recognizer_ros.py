@@ -144,8 +144,7 @@ class Recognizer(object):
         except Exception, e:
             pass
 
-    @staticmethod
-    def ros_spinning(message="None"):
+    def ros_spinning(self, message="None"):
         rospy.spin()
 
     def restart_callback(self, ros_data):
