@@ -45,7 +45,7 @@ if __name__ == '__main__':
     (options, args) = parser.parse_args()
     # Pacify logger.
     logging.basicConfig()
-    if not sys.argv[1]:
+    if len(sys.argv) < 2:
         print "You need to provide a person_label"
         parser.print_help()
     with rsb.createInformer(options.scope, dataType=str) as informer:
