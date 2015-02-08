@@ -48,5 +48,6 @@ if __name__ == '__main__':
     if len(sys.argv) < 2:
         print "You need to provide a person_label"
         parser.print_help()
+        sys.exit(1)
     with rsb.createInformer(options.scope, dataType=str) as informer:
         informer.publishData(str(sys.argv[1]))

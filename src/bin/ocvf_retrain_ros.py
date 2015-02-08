@@ -59,6 +59,7 @@ if __name__ == '__main__':
     if len(sys.argv) < 2:
         print ">> You need to provide a person_label"
         parser.print_help()
+        sys.exit(1)
     try:
         restart(options.topic, str(sys.argv[1]))
         time.sleep(1)
