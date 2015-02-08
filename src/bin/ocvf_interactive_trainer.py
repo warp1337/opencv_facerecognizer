@@ -243,10 +243,10 @@ if __name__ == '__main__':
         sys.exit(1)
 
     if options.middleware_type == "rsb":
-        from ocvfacerec.mwconnector import RSBConnector
+        from ocvfacerec.mwconnector.rsbconnector import RSBConnector
         Trainer(options, RSBConnector()).run()
     elif options.middleware_type == "ros":
-        from ocvfacerec.mwconnector import ROSConnector
+        from ocvfacerec.mwconnector.rosconnector import ROSConnector
         Trainer(options, ROSConnector()).run()
     else:
         print ">> Error: Middleware %s not supported" % options.middleware_type

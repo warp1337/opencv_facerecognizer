@@ -44,7 +44,7 @@ from rsb.converter import registerGlobalConverter
 from rstconverters.opencv import IplimageConverter
 
 # OCVF Imports
-from ocvfacerec.mwconnector import MiddlewareConnector
+from ocvfacerec.mwconnector.abtractconnector import MiddlewareConnector
 
 
 class RSBConnector(MiddlewareConnector):
