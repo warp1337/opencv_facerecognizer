@@ -122,7 +122,6 @@ class Trainer(object):
 
         print ">> Deactivating Middleware"
         self.middleware.deactivate()
-        print ">> Done"
 
     def record_images(self, train_name):
         print ">> Recording %d Images From %s..." % (self.training_image_number, self.image_source)
@@ -133,7 +132,7 @@ class Trainer(object):
         abort_threshold = 80
         abort_count = 0
         switch = False
-        print ">> Sampling...",
+        print ">> Sampling..."
         while num_mugshots < self.training_image_number and not self.abort_training and abort_count < abort_threshold:
 
             # Take every second frame to add some more variance
@@ -170,7 +169,7 @@ class Trainer(object):
         print ">> Re-Training is running..."
         walk_result = [x[0] for x in os.walk(self.training_data_path)][1:]
         if len(walk_result) > 0:
-            print ">> Persons Available for Re-Training: ", ", ".join([x.split("/")[-1] for x in walk_result])
+            print ">> Persons Available for Re-Training ", ", ".join([x.split("/")[-1] for x in walk_result])
         else:
             print ">> No Persons Found for Re-Training"
             return

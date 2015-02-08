@@ -153,7 +153,7 @@ class TheTrainer():
         # given, the script allows you to perform a k-fold Cross Validation before
         # the Detection & Recognition part starts:
         if self.numfolds is not None:
-            print ">> Validating Model With %s Folds..." % self.numfolds
+            print ">> Validating Model With %s Folds.." % self.numfolds
             # We want to have some log output, so set up a new logging handler
             # and point it to stdout:
             handler = logging.StreamHandler(sys.stdout)
@@ -168,8 +168,8 @@ class TheTrainer():
             crossval.validate(images, labels)
             crossval.print_results()
         # Compute the model:
-        print ">> Computing Model..."
+        print ">> Computing Model.."
         model.compute(images, labels)
         # And save the model, which uses Pythons pickle module:
-        print ">> Saving Model..."
+        print ">> Saving Model.."
         save_model(self.model_filename, model)
