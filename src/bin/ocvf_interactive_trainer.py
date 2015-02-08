@@ -191,15 +191,14 @@ class Trainer(object):
 
 
 if __name__ == '__main__':
-    usage = "Usage: %prog [options] model_filename"
+    usage = ">> Usage: %prog [options] model_filename"
     # Add options for training, resizing, validation:
     parser = optparse.OptionParser(usage=usage)
     group_mw = optparse.OptionGroup(parser, 'Middleware Options')
     group_algorithm = optparse.OptionGroup(parser, 'Algorithm Options')
     group_io = optparse.OptionGroup(parser, 'IO Options')
 
-    group_mw.add_option("-w", "--middleware", action="store",
-                        dest="middleware_type", type="string", default="rsb",
+    group_mw.add_option("-w", "--middleware", action="store", dest="middleware_type", type="string", default="rsb",
                         help="Type of middleware to use. Currently supported: 'rsb' and 'ros' (default: %default).")
     group_mw.add_option("-s", "--image-source", action="store",
                         dest="image_source", default="/rsbopencv/ipl",
@@ -232,7 +231,6 @@ if __name__ == '__main__':
     parser.add_option_group(group_mw)
     parser.add_option_group(group_io)
     parser.add_option_group(group_algorithm)
-
     (options, args) = parser.parse_args()
 
     try:
