@@ -66,7 +66,7 @@ class RSBConnector(MiddlewareConnector):
         self.last_train.put(retrain_event.data, False)
 
     def activate(self, image_source, retrain_source, restart_target):
-        registerGlobalConverter(IplimageConverter(), True)
+        registerGlobalConverter(IplimageConverter())
         rsb.setDefaultParticipantConfig(rsb.ParticipantConfig.fromDefaultSources())
 
         # Listen to Image Events
