@@ -54,10 +54,11 @@ class Trainer(object):
         self.mugshot_size          = _options.mugshot_size
         self.retrain_source        = _options.retrain_source
         self.restart_target        = _options.restart_target
+        self.restart_recgonizer    = _options.restart_target
         self.middleware_type       = _options.middleware_type
         self.training_data_path    = _options.training_data_path
-        self.cascade_filename      = cv2.CascadeClassifier(_options.cascade_filename)
         self.training_image_number = _options.training_image_number
+        self.cascade_filename      = cv2.CascadeClassifier(_options.cascade_filename)
         try:
             self.image_size = (int(_options.image_size.split("x")[0]), int(_options.image_size.split("x")[1]))
         except Exception, e:
@@ -77,11 +78,12 @@ class Trainer(object):
         signal.signal(signal.SIGINT, signal_handler)
 
     def run(self):
-        print ">> Middleware: %s" % self.middleware_type.upper()
-        print ">> Path to Training Images: %s " % self.training_data_path
-        print ">> Path to Model File: %s" % self.model_path
-        print ">> Remote Camera Source: %s " % self.image_source
-        print ">> Re-Train Command Scope %s\n" % self.retrain_source
+        print ">> Middleware %s" % self.middleware_type.upper()
+        print ">> Path to Training Images <-- %s " % self.training_data_path
+        print ">> Path to Model File <-- --> %s" % self.model_path
+        print ">> Remote Camera Source <-- %s " % self.image_source
+        print ">> Re-Train Command Scope/Topic <-- %s\n" % self.retrain_source
+        print ">> Restart Recognizer Scope/Topic --> %s\n" % self.restart_recgonizer
 
         try:
             self.middleware.activate(self.image_source, self.retrain_source, self.restart_target)
@@ -168,7 +170,7 @@ class Trainer(object):
         print ">> Re-Training is running..."
         walk_result = [x[0] for x in os.walk(self.training_data_path)][1:]
         if len(walk_result) > 0:
-            print ">> Persons Available For Re-Training: ", ", ".join([x.split("/")[-1] for x in walk_result])
+            print ">> Persons Available for Re-Training: ", ", ".join([x.split("/")[-1] for x in walk_result])
         else:
             print ">> No Persons Found for Re-Training"
             return
@@ -184,7 +186,7 @@ class Trainer(object):
             trainer.train()
 
     def restart_classifier(self):
-        print ">> Restarting Recognizer..."
+        print ">> Restarting Recognizer"
         self.middleware.restart_classifier()
 
 
