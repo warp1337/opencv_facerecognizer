@@ -135,7 +135,7 @@ class Trainer(object):
         abort_count = 0
         switch = False
         cascade = cv.Load(self.cascade_filename)
-        print ">>\t",
+        print ">> Sampling ",
         while num_mugshots < self.training_image_number and not self.abort_training and abort_count < abort_threshold:
 
             # Take every second frame to add some more variance
