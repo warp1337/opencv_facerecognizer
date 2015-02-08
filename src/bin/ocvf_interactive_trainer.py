@@ -157,6 +157,7 @@ class Trainer(object):
                 sys.stdout.write("-")
                 sys.stdout.flush()
 
+        print ""
         if abort_count >= abort_threshold:
             return False
         else:
