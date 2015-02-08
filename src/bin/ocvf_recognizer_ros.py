@@ -144,12 +144,13 @@ class Recognizer(object):
         except Exception, e:
             pass
 
-    def ros_spinning(self, message="None"):
+    @staticmethod
+    def ros_spinning(message="None"):
         rospy.spin()
 
     def restart_callback(self, ros_data):
+        print ">> Received Restart Request %s" % str(ros_data.data)
         if "restart" in str(ros_data):
-            print ">> Received Restart Request %s" % str(ros_data.data)
             self.ros_restart_request = True
 
     def run_distributed(self, image_topic, restart_topic):
@@ -178,7 +179,7 @@ if __name__ == '__main__':
     parser.add_option("-c", "--cascade", action="store", dest="cascade_filename",
                       default="haarcascade_frontalface_alt2.xml",
                       help="Sets the path to the Haar Cascade used for the face detection part (default: haarcascade_frontalface_alt2.xml).")
-    parser.add_option("-n", "--restart-notification", action="store", dest="restart_notification", default="/ocvfacerec/ros/restart/",
+    parser.add_option("-n", "--restart-notification", action="store", dest="restart_notification", default="/ocvfacerec/ros/restart",
                       help="Target (topic/scope) where a simple restart message is received (basic string, containing 'restart') (default: %default).")
     parser.add_option("-s", "--ros-source", action="store", dest="ros_source", help="Grab video from ROS Middleware", default="/usb_cam/image_raw")
     parser.add_option("-w", "--wait", action="store", dest="wait_time", default=20, type="int",

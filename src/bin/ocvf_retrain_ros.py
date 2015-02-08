@@ -47,7 +47,7 @@ def restart(topic):
 if __name__ == '__main__':
     usage = "Usage: %prog [options]"
     parser = optparse.OptionParser(usage=usage)
-    parser.add_option("-t", "--topic", action="store", type="string", dest="topic", default="/ocvfacerec/ros/restart/",
+    parser.add_option("-t", "--topic", action="store", type="string", dest="topic", default="/ocvfacerec/ros/restart",
                       help="Send a Restart Command to this Scope")
     (options, args) = parser.parse_args()
 
