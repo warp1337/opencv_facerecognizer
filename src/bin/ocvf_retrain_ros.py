@@ -39,7 +39,7 @@ from std_msgs.msg import String
 
 
 def restart(topic):
-    pub = rospy.Publisher(topic, String, queue_size=1)
+    pub = rospy.Publisher(topic, String, queue_size=2)
     rospy.init_node('rosrestart', anonymous=True)
     msg = "restart"
     rospy.loginfo(msg)
