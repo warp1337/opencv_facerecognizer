@@ -85,7 +85,7 @@ class Trainer(object):
         print ">> Path to Model File <-- --> %s" % self.model_path
         print ">> Remote Camera Source <-- %s " % self.image_source
         print ">> Re-Train Command Scope/Topic <-- %s" % self.retrain_source
-        print ">> Restart Recognizer Scope/Topic --> %s\n" % self.restart_recgonizer
+        print ">> Restart Recognizer Scope/Topic --> %s" % self.restart_recgonizer
 
         try:
             self.middleware.activate(self.image_source, self.retrain_source, self.restart_target)
@@ -97,6 +97,7 @@ class Trainer(object):
         self.re_train()
 
         print ">> Ready!"
+
         while self.doRun:
             try:
                 train_name = self.middleware.wait_for_start_training()
@@ -112,8 +113,6 @@ class Trainer(object):
                     self.counter += 1
                 else:
                     print ">> Unable to Collect Enough Images"
-
-                print ">> Done Collecting"
 
             except Exception, e:
                 print ">> Error: ", e
@@ -158,7 +157,6 @@ class Trainer(object):
                 sys.stdout.write("-")
                 sys.stdout.flush()
 
-        print ""
         if abort_count >= abort_threshold:
             return False
         else:
