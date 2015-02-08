@@ -203,10 +203,10 @@ if __name__ == '__main__':
                         dest="image_source", default="/rsbopencv/ipl",
                         help="Source (topic/scope) from which to get video images (default: %default).")
     group_mw.add_option("-e", "--re-train-source", action="store",
-                        dest="retrain_source", default="/ocvfacerec/trainer/retrain",
+                        dest="retrain_source", default="/ocvfacerec/rsb/trainer/retrain",
                         help="Source (topic/scope) from which to get a re-train message (basic string, representing name of the person) (default: %default).")
     group_mw.add_option("-p", "--restart-target", action="store",
-                        dest="restart_target", default="/ocvfacerec/recognizer/restart",
+                        dest="restart_target", default="/ocvfacerec/rsb/restart/",
                         help="Target (topic/scope) to where a simple restart message is sent (basic string, containing 'restart') (default: %default).")
 
     group_io.add_option("-m", "--model-path", action="store", dest="model_path", default="/tmp/model.pkl",

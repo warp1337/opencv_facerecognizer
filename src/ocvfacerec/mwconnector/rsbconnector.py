@@ -33,6 +33,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 # STD Imports
+import numpy as np
 from Queue import Queue
 
 # RSB Specifics

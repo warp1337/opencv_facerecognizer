@@ -60,13 +60,17 @@ from rst.classification.ClassificationResult_pb2 import ClassificationResult
 
 
 class Recognizer(object):
-    def __init__(self, model, camera_id, cascade_filename, run_local, inscope="/rsbopencv/ipl", wait=50):
+    def __init__(self, model, camera_id, cascade_filename, run_local, inscope="/rsbopencv/ipl",
+                 wait=50, notification="/ocvfacerec/rsb/restart/"):
         self.model = model
         self.wait = wait
+        self.notification_scope = notification
         self.detector = CascadedDetector(cascade_fn=cascade_filename, minNeighbors=5, scaleFactor=1.1)
+
         if run_local:
             print ">> [Error] Run local selected in ROS based recognizer"
             sys.exit(1)
+
         self.doRun = True
         self.restart = False
 
@@ -75,7 +79,7 @@ class Recognizer(object):
             self.doRun = False
 
         signal.signal(signal.SIGINT, signal_handler)
-        # RSB Stuff
+        # RSB
         try:
             registerGlobalConverter(IplimageConverter())
             registerGlobalConverter(ProtocolBufferConverter(messageClass=ClassificationResult))
@@ -83,7 +87,7 @@ class Recognizer(object):
             print ">> [Error] ", e
         self.listener = rsb.createListener(inscope)
         self.lastImage = Queue(1)
-        self.restart_listener = rsb.createListener("/ocvfacerec/rsb/restart/")
+        self.restart_listener = rsb.createListener(self.notification_scope)
         self.last_restart_request = Queue(1)
         # This must be set at last
         rsb.setDefaultParticipantConfig(rsb.ParticipantConfig.fromDefaultSources())
@@ -169,6 +173,8 @@ if __name__ == '__main__':
                       default="haarcascade_frontalface_alt2.xml",
                       help="Sets the path to the Haar Cascade used for the face detection part (default: haarcascade_frontalface_alt2.xml).")
     parser.add_option("-s", "--rsb-source", action="store", dest="rsb_source", default="/rsbopencv/ipl", help="Grab video from RSB Middleware")
+    parser.add_option("-n", "--restart-notification", action="store", dest="restart_notification", default="/ocvfacerec/rsb/restart/",
+                        help="Target (topic/scope) where a simple restart message is received (basic string, containing 'restart') (default: %default).")
     parser.add_option("-w", "--wait", action="store", dest="wait_time", default=20, type="int",
                       help="Amount of time (in ms) to sleep between face identifaction runs (frames). Default is 20 ms. Increase this value on low-end machines.")
     (options, args) = parser.parse_args()
@@ -203,19 +209,17 @@ if __name__ == '__main__':
 
     print ">> Loading model " + str(model_filename)
     model = load_model(model_filename)
-    # We operate on an ExtendedPredictableModel. Quit the Recognizerlication if this
-    # isn't what we expect it to be:
     if not isinstance(model, ExtendedPredictableModel):
         print ">> [Error] The given model is not of type '%s'." % "ExtendedPredictableModel"
         sys.exit(1)
-    # Now it's time to finally start the Recognizerlication! It simply get's the model
-    # and the image size the incoming webcam or video images are resized to:
     print ">> Using Remote RSB Camera Stream"
-    x = Recognizer(model=model, camera_id=None, cascade_filename=options.cascade_filename, run_local=False, inscope=options.rsb_source, wait=options.wait_time)
+    x = Recognizer(model=model, camera_id=None, cascade_filename=options.cascade_filename, run_local=False,
+                   inscope=options.rsb_source, wait=options.wait_time, notification=options.restart_notification)
     x.run_distributed()
     while x.restart:
         time.sleep(10)
         model = load_model(model_filename)
-        x = Recognizer(model=model, camera_id=None, cascade_filename=options.cascade_filename, run_local=False, inscope=options.rsb_source, wait=options.wait_time)
+        x = Recognizer(model=model, camera_id=None, cascade_filename=options.cascade_filename, run_local=False,
+                       inscope=options.rsb_source, wait=options.wait_time, notification=options.restart_notification)
         x.run_distributed()
 
