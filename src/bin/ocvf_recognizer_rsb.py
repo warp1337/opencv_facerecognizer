@@ -207,13 +207,13 @@ if __name__ == '__main__':
         trainer = TheTrainer(options.dataset, image_size, model_filename, _numfolds=options.numfolds)
         trainer.train()
 
-    print ">> Loading model " + str(model_filename)
+    print ">> Loading model <-- " + str(model_filename)
     model = load_model(model_filename)
     if not isinstance(model, ExtendedPredictableModel):
         print ">> [Error] The given model is not of type '%s'." % "ExtendedPredictableModel"
         sys.exit(1)
-    print ">> Using Remote RSB Camera Stream " + str(options.rsb_source)
-    print ">> Restart Recognizer Scope " + str(options.restart_notification)
+    print ">> Using Remote RSB Camera Stream <-- " + str(options.rsb_source)
+    print ">> Restart Recognizer Scope <-- " + str(options.restart_notification)
     x = Recognizer(model=model, camera_id=None, cascade_filename=options.cascade_filename, run_local=False,
                    inscope=options.rsb_source, wait=options.wait_time, notification=options.restart_notification)
     x.run_distributed()
