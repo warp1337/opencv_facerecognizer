@@ -169,6 +169,7 @@ class Recognizer(object):
         while self.doRun:
             time.sleep(0.01)
             pass
+        # Important: You need to unregister before restarting!
         image_subscriber.unregister()
         restart_subscriber.unregister()
         print ">> Deactivating ROS Subscriber"
@@ -245,7 +246,7 @@ if __name__ == '__main__':
                    wait=options.wait_time, rp=rp)
     x.run_distributed(str(options.ros_source), str(options.restart_notification))
     while x.restart:
-        time.sleep(5)
+        time.sleep(1)
         model = load_model(model_filename)
         x = Recognizer(model=model, cascade_filename=options.cascade_filename, run_local=False,
                        wait=options.wait_time, rp=rp)
