@@ -82,7 +82,7 @@ class Recognizer(object):
         signal.signal(signal.SIGINT, signal_handler)
         # RSB
         try:
-            registerGlobalConverter(IplimageConverter())
+            registerGlobalConverter(IplimageConverter(), True)
             registerGlobalConverter(ProtocolBufferConverter(messageClass=ClassificationResult))
         except Exception, e:
             print ">> [Error] ", e
