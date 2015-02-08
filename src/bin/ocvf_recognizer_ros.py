@@ -66,6 +66,11 @@ class RosPeople:
         rospy.init_node('ocvfacerec_people_publisher', anonymous=True)
 
 
+@staticmethod
+def ros_spinning(message="None"):
+        rospy.spin()
+
+
 class Recognizer(object):
     def __init__(self, model, cascade_filename, run_local, wait, rp):
         self.rp = rp
@@ -144,10 +149,6 @@ class Recognizer(object):
         except Exception, e:
             pass
 
-    @staticmethod
-    def ros_spinning(message="None"):
-        rospy.spin()
-
     def restart_callback(self, ros_data):
         print ">> Received Restart Request %s" % str(ros_data.data)
         if "restart" in str(ros_data):
@@ -156,7 +157,6 @@ class Recognizer(object):
     def run_distributed(self, image_topic, restart_topic):
         image_subscriber   = rospy.Subscriber(image_topic, Image, self.image_callback, queue_size=1)
         restart_subscriber = rospy.Subscriber(restart_topic, String, self.restart_callback, queue_size=1)
-        # start_new_thread(self.ros_spinning, ("None",))
         print ">> Recognizer is running"
         while self.doRun:
             time.sleep(0.01)
@@ -234,6 +234,7 @@ if __name__ == '__main__':
     x = Recognizer(model=model, cascade_filename=options.cascade_filename, run_local=False,
                    wait=options.wait_time, rp=rp)
     x.run_distributed(str(options.ros_source), str(options.restart_notification))
+    start_new_thread(ros_spinning, ("None",))
     while x.restart:
         time.sleep(1)
         model = load_model(model_filename)
