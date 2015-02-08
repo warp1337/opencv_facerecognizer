@@ -65,7 +65,7 @@ class ROSConnector(MiddlewareConnector):
         except Exception, e:
             print e
         try:
-            cv_image = self.bridge.imgmsg_to_cv2(image_data.data, "bgr8")
+            cv_image = self.bridge.imgmsg_to_cv2(image_data, "bgr8")
             self.last_image.put(cv_image, False)
         except Exception, e:
             print e
