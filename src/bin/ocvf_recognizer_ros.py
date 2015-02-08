@@ -169,6 +169,8 @@ class Recognizer(object):
         while self.doRun:
             time.sleep(0.01)
             pass
+        image_subscriber.unregister()
+        restart_subscriber.unregister()
         print ">> Deactivating ROS Subscriber"
 
 if __name__ == '__main__':
