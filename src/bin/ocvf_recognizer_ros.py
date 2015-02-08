@@ -68,6 +68,7 @@ class RosPeople:
 
 @staticmethod
 def ros_spinning(message="None"):
+        print ">> ROS is spinning"
         rospy.spin()
 
 
@@ -231,10 +232,10 @@ if __name__ == '__main__':
     print ">> Restart Recognizer Scope <-- " + str(options.restart_notification)
     # Init ROS People Publisher
     rp = RosPeople()
+    start_new_thread(ros_spinning, ("None",))
     x = Recognizer(model=model, cascade_filename=options.cascade_filename, run_local=False,
                    wait=options.wait_time, rp=rp)
     x.run_distributed(str(options.ros_source), str(options.restart_notification))
-    start_new_thread(ros_spinning, ("None",))
     while x.restart:
         time.sleep(1)
         model = load_model(model_filename)
