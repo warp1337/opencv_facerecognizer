@@ -40,7 +40,7 @@ import optparse
 if __name__ == '__main__':
     usage = "Usage: %prog [options] <person_label>"
     parser = optparse.OptionParser(usage=usage)
-    parser.add_option("-s", "--scope", action="store", type="string", dest="scope", default="/ocvfacerec/rsb/trainer/retrain",
+    parser.add_option("-s", "--scope", action="store", type="string", dest="scope", default="/ocvfacerec/trainer/retrainperson",
                       help="Send a Re-Train Command to this Scope")
     (options, args) = parser.parse_args()
     # Pacify logger.

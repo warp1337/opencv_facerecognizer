@@ -32,31 +32,35 @@
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+# STD Imports
 import sys
 import time
 import rospy
 import optparse
+
+# ROS Imports
 from std_msgs.msg import String
 
 
-def restart(topic):
-    pub = rospy.Publisher(topic, String, queue_size=10)
-    rospy.init_node('rosrestart', anonymous=False)
-    msg = "restart"
+def restart(topic, name):
+    pub = rospy.Publisher(topic, String, queue_size=1)
+    rospy.init_node('ros_restart', anonymous=True)
+    msg = name
     rospy.loginfo(msg)
     pub.publish(msg)
     print ">> Sent %s to Topic %s" % (msg, topic)
 
 if __name__ == '__main__':
-    usage = ">> Usage: %prog [options]"
+    usage = ">> Usage: %prog [options] <person_label>"
     parser = optparse.OptionParser(usage=usage)
-    parser.add_option("-t", "--topic", action="store", type="string", dest="topic", default="/ocvfacerec/ros/restart",
-                      help="Send a Restart Command to this Scope")
+    parser.add_option("-t", "--topic", action="store", type="string", dest="scope", default="/ocvfacerec/trainer/retrainperson",
+                      help="Send a Re-Train Command to this Scope")
     (options, args) = parser.parse_args()
-
+    if len(sys.argv) < 2:
+        print ">> You need to provide a person_label"
+        parser.print_help()
     try:
-        restart(options.topic)
+        restart(options.topic, str(sys.argv[1]))
         time.sleep(1)
-    except rospy.ROSInterruptException, e:
-        print e
-        pass
+    except rospy.ROSInterruptException, ex:
+        print ex

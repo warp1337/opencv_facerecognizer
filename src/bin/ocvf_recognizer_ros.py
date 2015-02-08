@@ -188,13 +188,12 @@ if __name__ == '__main__':
     parser.add_option("-t", "--train", action="store", dest="dataset", type="string", default=None,
                       help="Trains the model on the given dataset.")
     parser.add_option("-c", "--cascade", action="store", dest="cascade_filename",
-                      default="haarcascade_frontalface_alt2.xml",
-                      help="Sets the path to the Haar Cascade used for the face detection part (default: haarcascade_frontalface_alt2.xml).")
-    parser.add_option("-n", "--restart-notification", action="store", dest="restart_notification", default="/ocvfacerec/ros/restart",
-                      help="Target (topic/scope) where a simple restart message is received (basic string, containing 'restart') (default: %default).")
+                      help="Sets the path to the Haar Cascade used for the face detection part [haarcascade_frontalface_alt2.xml].")
+    parser.add_option("-n", "--restart-notification", action="store", dest="restart_notification", default="/ocvfacerec/restart",
+                      help="Target Scope where a simple restart message is received (default: %default).")
     parser.add_option("-s", "--ros-source", action="store", dest="ros_source", help="Grab video from ROS Middleware", default="/usb_cam/image_raw")
     parser.add_option("-w", "--wait", action="store", dest="wait_time", default=20, type="int",
-                      help="Amount of time (in ms) to sleep between face identifaction runs (frames). Default is 20 ms. Increase this value on low-end machines.")
+                      help="Amount of time (in ms) to sleep between face identification frames (default: %default).")
     (options, args) = parser.parse_args()
     # Check if a model name was passed:
     if options.ros_source is None:

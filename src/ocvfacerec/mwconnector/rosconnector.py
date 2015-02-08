@@ -32,20 +32,73 @@
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+# STD Imports
+from Queue import Queue
+
+# ROS IMPORTS
+import rospy
+from cv_bridge import CvBridge
+from std_msgs.msg import String
+from std_msgs.msg import Header
+from sensor_msgs.msg import Image
+from people_msgs.msg import People
+from people_msgs.msg import Person
+from geometry_msgs.msg import Point
+
+# OCVF Imports
 from ocvfacerec.mwconnector.abtractconnector import MiddlewareConnector
 
 
 class ROSConnector(MiddlewareConnector):
     # TODO Implement
     def __init__(self):
-        raise Exception("Not Implemented yet ...")
-        pass
+        self.bridge = CvBridge()
+        self.restart_subscriber = None
+        self.restart_publisher = None
+        self.image_subscriber = None
+        self.last_image = None
+        self.last_train = None
 
-    def activate(self, source):
-        pass
+    def add_last_image(self, image_data):
+        try:
+            self.lastImage.get(False)
+        except Exception, e:
+            print e
+        try:
+            cv_image = self.bridge.imgmsg_to_cv2(image_data, "bgr8")
+            self.lastImage.put(cv_image, False)
+        except Exception, e:
+            print e
+
+    def add_last_train(self, msg):
+            try:
+                self.last_train.get(False)
+            except Exception, e:
+                pass
+            self.last_train.put(msg, False)
+            print ">> Received Restart Request for %s" % str(msg)
+
+    def activate(self, image_source, retrain_source, restart_target):
+        self.image_subscriber   = rospy.Subscriber(image_source, Image, self.add_last_image, queue_size=1)
+        self.last_image = Queue(1)
+
+        self.restart_subscriber = rospy.Subscriber(retrain_source, String, self.add_last_train, queue_size=1)
+        self.last_train = Queue(1)
+
+        self.restart_publisher  = rospy.Publisher(restart_target, String, queue_size=1)
+        rospy.init_node('ros_connector_trainer', anonymous=False)
 
     def deactivate(self):
-        pass
+        self.restart_subscriber.unregister()
+        self.image_subscriber.unregister()
+
+    def restart_classifier(self):
+        # Send a short "restart" event to the recognizer
+        msg = "restart"
+        self.restart_publisher.publish(msg)
+
+    def wait_for_start_training(self):
+        return self.last_train.get(True, timeout=1)
 
     def get_image(self):
-        pass
+        return self.last_image.get(True, timeout=10)

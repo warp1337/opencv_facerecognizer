@@ -34,5 +34,5 @@
 
 
 class MiddlewareConnector(object):
-    # TODO: USE ABC for abstraction?
+    # TODO: USE ABC for Abstraction?!
     pass

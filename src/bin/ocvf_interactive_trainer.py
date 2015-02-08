@@ -89,16 +89,13 @@ class Trainer(object):
 
         try:
             self.middleware.activate(self.image_source, self.retrain_source, self.restart_target)
-        except Exception, e:
-            print ">> Error: Can't Activate Middleware "
+        except Exception, ex:
+            print ">> Error: Can't Activate Middleware ", ex
             traceback.print_exc()
-
-        try:
-            self.middleware.activate(self.image_source, self.retrain_source, self.restart_target)
-        except Exception, e:
-            print ">> Error: ", e
+            sys.exit(1)
 
         self.re_train()
+
         print ">> Ready."
         while self.doRun:
             try:
@@ -130,12 +127,12 @@ class Trainer(object):
     def record_images(self, train_name):
         print ">> Recording %d Images From %s..." % (self.training_image_number, self.image_source)
         person_image_path = os.path.join(self.training_data_path, train_name)
+        cascade = cv.Load(self.cascade_filename)
         mkdir_p(person_image_path)
         num_mugshots = 0
         abort_threshold = 80
         abort_count = 0
         switch = False
-        cascade = cv.Load(self.cascade_filename)
         print ">> Sampling ",
         while num_mugshots < self.training_image_number and not self.abort_training and abort_count < abort_threshold:
 
@@ -206,13 +203,13 @@ if __name__ == '__main__':
                         help="Type of middleware to use. Currently supported: 'rsb' and 'ros' (default: %default).")
     group_mw.add_option("-s", "--image-source", action="store",
                         dest="image_source", default="/rsbopencv/ipl",
-                        help="Source (topic/scope) from which to get video images (default: %default).")
+                        help="Source Topic [RSB] or Scope [ROS] of video images (default: %default).")
     group_mw.add_option("-e", "--re-train-source", action="store",
-                        dest="retrain_source", default="/ocvfacerec/rsb/trainer/retrain",
-                        help="Source (topic/scope) from which to get a re-train message (basic string, representing name of the person) (default: %default).")
+                        dest="retrain_source", default="/ocvfacerec/trainer/retrainperson",
+                        help="Source (topic/scope) from which to get a re-train message (String, name of the person) (default: %default).")
     group_mw.add_option("-p", "--restart-target", action="store",
-                        dest="restart_target", default="/ocvfacerec/rsb/restart/",
-                        help="Target (topic/scope) to where a simple restart message is sent (basic string, containing 'restart') (default: %default).")
+                        dest="restart_target", default="/ocvfacerec/restart",
+                        help="Target (topic/scope) to where a simple restart message is sent (String 'restart') (default: %default).")
 
     group_io.add_option("-m", "--model-path", action="store", dest="model_path", default="/tmp/model.pkl",
                         help="Storage path for the model file (default: %default).")
@@ -228,8 +225,7 @@ if __name__ == '__main__':
     group_algorithm.add_option("-v", "--validate", action="store", dest="numfolds", type="int", default=None,
                                help="Performs a k-fold cross validation on the dataset, if given (default: %default).")
     group_algorithm.add_option("-c", "--cascade", action="store", dest="cascade_filename",
-                               default="haarcascade_frontalface_alt2.xml",
-                               help="Sets the path to the Haar Cascade used for the face detection part (default: %default).")
+                               help="Sets the path to the HaarCascade file used for the face detection algorithm [haarcascade_frontalface_alt2.xml].")
     group_algorithm.add_option("-l", "--mugshot-size", action="store", type="int", dest="mugshot_size", default=100,
                                help="Sets minimal size (in pixels) required for a mugshot of a person in order to use it for training (default: %default).")
 
