@@ -204,17 +204,17 @@ if __name__ == '__main__':
 
     # Now it's time to finally start the Recognizerlication! It simply get's the model
     # and the image size the incoming webcam or video images are resized to:
-    print ">> ROS Camera Input Stream <-- " + options.ros_source
+    print ">> ROS Camera Input Stream <-- " + str(options.ros_source)
     print ">> Publishing People Info  --> /ocvfacerec/ros/people"
 
     # Init ROS People Publisher
     rp = RosPeople()
     x = Recognizer(model=model, cascade_filename=options.cascade_filename, run_local=False,
                    wait=options.wait_time, rp=rp)
-    x.run_distributed()
+    x.run_distributed(str(options.ros_source))
     while x.restart:
         time.sleep(1)
         model = load_model(model_filename)
         x = Recognizer(model=model, cascade_filename=options.cascade_filename, run_local=False,
                        wait=options.wait_time, rp=rp)
-        x.run_distributed()
+        x.run_distributed(str(options.ros_source))
