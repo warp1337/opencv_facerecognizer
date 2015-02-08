@@ -218,7 +218,7 @@ if __name__ == '__main__':
                    inscope=options.rsb_source, wait=options.wait_time, notification=options.restart_notification)
     x.run_distributed()
     while x.restart:
-        time.sleep(10)
+        time.sleep(1)
         model = load_model(model_filename)
         x = Recognizer(model=model, camera_id=None, cascade_filename=options.cascade_filename, run_local=False,
                        inscope=options.rsb_source, wait=options.wait_time, notification=options.restart_notification)
