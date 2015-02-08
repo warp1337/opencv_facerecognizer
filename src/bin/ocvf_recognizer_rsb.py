@@ -155,6 +155,7 @@ class Recognizer(object):
             except Exception, e:
                 pass
 
+        print ">> Deactivating RSB listener"
         self.listener.deactivate()
         self.restart_listener.deactivate()
         # informer.deactivate()
