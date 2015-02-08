@@ -76,7 +76,7 @@ class ROSConnector(MiddlewareConnector):
             except Exception, e:
                 pass
             self.last_train.put(str(msg.data), False)
-            print ">> Received Restart Request for %s" % str(msg)
+            print ">> Received Restart Request for %s" % str(msg.data)
 
     def activate(self, image_source, retrain_source, restart_target):
         self.image_subscriber   = rospy.Subscriber(image_source, Image, self.add_last_image, queue_size=1)
