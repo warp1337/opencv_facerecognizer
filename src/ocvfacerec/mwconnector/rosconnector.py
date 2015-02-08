@@ -64,13 +64,13 @@ class ROSConnector(MiddlewareConnector):
         try:
             self.last_image.get(False)
         except Exception, e:
-            print e
+            pass
         try:
             cv_image = self.bridge.imgmsg_to_cv2(image_data, "bgr8")
             # self.last_image.put(cv_image, False)
             self.last_image.put(np.asarray(cv_image[:, :]), False)
         except Exception, e:
-            print e
+            pass
 
     def add_last_train(self, msg):
             try:
