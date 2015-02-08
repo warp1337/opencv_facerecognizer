@@ -82,7 +82,7 @@ class Trainer(object):
         print ">> Path to Training Images <-- %s " % self.training_data_path
         print ">> Path to Model File <-- --> %s" % self.model_path
         print ">> Remote Camera Source <-- %s " % self.image_source
-        print ">> Re-Train Command Scope/Topic <-- %s\n" % self.retrain_source
+        print ">> Re-Train Command Scope/Topic <-- %s" % self.retrain_source
         print ">> Restart Recognizer Scope/Topic --> %s\n" % self.restart_recgonizer
 
         try:
