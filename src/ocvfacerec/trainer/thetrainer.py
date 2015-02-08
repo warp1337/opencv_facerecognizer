@@ -93,7 +93,7 @@ class TheTrainer():
                 for filename in os.listdir(subject_path):
                     try:
                         im = cv2.imread(os.path.join(subject_path, filename), cv2.IMREAD_GRAYSCALE)
-                        # resize to given size (if given)
+                        # Resize to given size (if given)
                         if image_size is not None:
                             im = cv2.resize(im, image_size)
                         X.append(np.asarray(im, dtype=np.uint8))

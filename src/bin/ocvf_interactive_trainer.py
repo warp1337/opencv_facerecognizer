@@ -81,6 +81,7 @@ class Trainer(object):
     def run(self):
         print ">> Middleware %s" % self.middleware_type.upper()
         print ">> Path to Training Images <-- %s " % self.training_data_path
+        print ">> Resize Images before Training to %s" % self.image_size
         print ">> Path to Model File <-- --> %s" % self.model_path
         print ">> Remote Camera Source <-- %s " % self.image_source
         print ">> Re-Train Command Scope/Topic <-- %s" % self.retrain_source
