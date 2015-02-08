@@ -212,7 +212,7 @@ if __name__ == '__main__':
     if not isinstance(model, ExtendedPredictableModel):
         print ">> [Error] The given model is not of type '%s'." % "ExtendedPredictableModel"
         sys.exit(1)
-    print ">> Using Remote RSB Camera Stream"
+    print ">> Using Remote RSB Camera Stream " + str(options.rsb_source)
     print ">> Restart Recognizer Scope " + str(options.restart_notification)
     x = Recognizer(model=model, camera_id=None, cascade_filename=options.cascade_filename, run_local=False,
                    inscope=options.rsb_source, wait=options.wait_time, notification=options.restart_notification)
