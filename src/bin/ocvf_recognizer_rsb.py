@@ -41,6 +41,7 @@ import signal
 import logging
 import numpy as np
 from Queue import Queue
+from optparse import OptionParser
 
 # OCVF Imports
 from ocvfacerec.helper.common import *
@@ -156,7 +157,6 @@ class Recognizer(object):
         # informer.deactivate()
 
 if __name__ == '__main__':
-    from optparse import OptionParser
     # model.pkl is a pickled (hopefully trained) PredictableModel, which is
     # used to make predictions. You can learn a model yourself by passing the
     # parameter -d (or --dataset) to learn the model from a given dataset.
@@ -174,7 +174,7 @@ if __name__ == '__main__':
                       help="Sets the path to the Haar Cascade used for the face detection part (default: haarcascade_frontalface_alt2.xml).")
     parser.add_option("-s", "--rsb-source", action="store", dest="rsb_source", default="/rsbopencv/ipl", help="Grab video from RSB Middleware")
     parser.add_option("-n", "--restart-notification", action="store", dest="restart_notification", default="/ocvfacerec/rsb/restart/",
-                        help="Target (topic/scope) where a simple restart message is received (basic string, containing 'restart') (default: %default).")
+                      help="Target (topic/scope) where a simple restart message is received (basic string, containing 'restart') (default: %default).")
     parser.add_option("-w", "--wait", action="store", dest="wait_time", default=20, type="int",
                       help="Amount of time (in ms) to sleep between face identifaction runs (frames). Default is 20 ms. Increase this value on low-end machines.")
     (options, args) = parser.parse_args()
