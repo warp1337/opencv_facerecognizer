@@ -45,6 +45,7 @@ from thread import start_new_thread
 
 # ROS IMPORTS
 from cv_bridge import CvBridge
+from std_msgs.msg import String
 from std_msgs.msg import Header
 from sensor_msgs.msg import Image
 from people_msgs.msg import People
@@ -79,8 +80,9 @@ class Recognizer(object):
 
         self.doRun = True
         self.restart = False
+        self.ros_restart_request = False
 
-    def callback(self, ros_data):
+    def image_callback(self, ros_data):
         try:
             cv_image = self.bridge.imgmsg_to_cv2(ros_data, "bgr8")
         except Exception, e:
@@ -135,8 +137,22 @@ class Recognizer(object):
         cv2.imshow('OCVFACEREC < ROS STREAM', imgout)
         cv2.waitKey(self.wait)
 
-    def run_distributed(self, topic):
-        subscriber = rospy.Subscriber(topic, Image, self.callback, queue_size=1)
+        try:
+            z = self.ros_restart_request
+            if z:
+                self.restart = True
+                self.doRun = False
+        except Exception, e:
+            pass
+
+    def restart_callback(self, ros_data):
+        print ">> Received Restart Request %s" % str(ros_data.data)
+        if "restart" in str(ros_data):
+            self.ros_restart_request = True
+
+    def run_distributed(self, image_topic, restart_topic):
+        image_subscriber   = rospy.Subscriber(image_topic, Image, self.image_callback, queue_size=1)
+        restart_subscriber = rospy.Subscriber(restart_topic, String, self.restart_callback, queue_size=1)
         start_new_thread(rospy.spin())
         while self.doRun:
             time.sleep(0.01)
@@ -159,6 +175,8 @@ if __name__ == '__main__':
     parser.add_option("-c", "--cascade", action="store", dest="cascade_filename",
                       default="haarcascade_frontalface_alt2.xml",
                       help="Sets the path to the Haar Cascade used for the face detection part (default: haarcascade_frontalface_alt2.xml).")
+    parser.add_option("-n", "--restart-notification", action="store", dest="restart_notification", default="/ocvfacerec/ros/restart/",
+                      help="Target (topic/scope) where a simple restart message is received (basic string, containing 'restart') (default: %default).")
     parser.add_option("-s", "--ros-source", action="store", dest="ros_source", help="Grab video from ROS Middleware", default="/usb_cam/image_raw")
     parser.add_option("-w", "--wait", action="store", dest="wait_time", default=20, type="int",
                       help="Amount of time (in ms) to sleep between face identifaction runs (frames). Default is 20 ms. Increase this value on low-end machines.")
@@ -206,15 +224,15 @@ if __name__ == '__main__':
     # and the image size the incoming webcam or video images are resized to:
     print ">> ROS Camera Input Stream <-- " + str(options.ros_source)
     print ">> Publishing People Info  --> /ocvfacerec/ros/people"
-
+    print ">> Restart Recognizer Scope <-- " + str(options.restart_notification)
     # Init ROS People Publisher
     rp = RosPeople()
     x = Recognizer(model=model, cascade_filename=options.cascade_filename, run_local=False,
                    wait=options.wait_time, rp=rp)
-    x.run_distributed(str(options.ros_source))
+    x.run_distributed(str(options.ros_source), str(options.restart_notification))
     while x.restart:
         time.sleep(1)
         model = load_model(model_filename)
         x = Recognizer(model=model, cascade_filename=options.cascade_filename, run_local=False,
                        wait=options.wait_time, rp=rp)
-        x.run_distributed(str(options.ros_source))
+        x.run_distributed(str(options.ros_source), str(options.restart_notification))
