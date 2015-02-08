@@ -68,7 +68,7 @@ class ROSConnector(MiddlewareConnector):
         try:
             cv_image = self.bridge.imgmsg_to_cv2(image_data, "bgr8")
             # self.last_image.put(cv_image, False)
-            self.lastImage.put(np.asarray(cv_image[:, :]), False)
+            self.last_image.put(np.asarray(cv_image[:, :]), False)
         except Exception, e:
             print e
 
