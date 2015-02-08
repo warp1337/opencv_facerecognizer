@@ -85,7 +85,8 @@ class Recognizer(object):
             registerGlobalConverter(IplimageConverter())
             registerGlobalConverter(ProtocolBufferConverter(messageClass=ClassificationResult))
         except Exception, e:
-            print ">> [Error] ", e
+            pass
+            # print ">> [Error] ", e
         self.listener = rsb.createListener(inscope)
         self.lastImage = Queue(1)
         self.restart_listener = rsb.createListener(self.notification_scope)
