@@ -66,7 +66,6 @@ class RosPeople:
         rospy.init_node('ocvfacerec_people_publisher', anonymous=True)
 
 
-@staticmethod
 def ros_spinning(message="None"):
         print ">> ROS is spinning"
         rospy.spin()
