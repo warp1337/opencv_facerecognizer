@@ -8,16 +8,15 @@ implementations and standardized installation and roll-out routines. At the time
 RSB [2] and ROS [3] are supported.
 
 * Changes
-
-    ** Decoupling and modularization of Py-Packages
-    ** Setuptools support
-    ** ROS and RSB middleware support
-    ** Typed message passing
-    ** "Live" re-training of individuals
-    ** "Live" recognizer restart using an updated model
-    ** Distributed camera streams
-    ** Publishing of classification results
-    ** Convenience Tools (cropper etc.)
+    * Decoupling and modularization of Py-Packages
+    * Setuptools support
+    * ROS and RSB middleware support
+    * Typed message passing
+    * "Live" re-training of individuals
+    * "Live" recognizer restart using an updated model
+    * Distributed camera streams
+    * Publishing of classification results
+    * Convenience Tools (cropper etc.)
 
 This documentation is *minimalistic*, which means it provides basic information on how to train
 a model and run this software stack. If you need detailed information about the _internals_
