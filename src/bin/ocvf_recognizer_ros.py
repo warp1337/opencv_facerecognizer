@@ -144,6 +144,9 @@ class Recognizer(object):
         except Exception, e:
             pass
 
+    def ros_spinning(self, message="None"):
+        rospy.spin()
+
     def restart_callback(self, ros_data):
         if "restart" in str(ros_data):
             print ">> Received Restart Request %s" % str(ros_data.data)
@@ -152,7 +155,7 @@ class Recognizer(object):
     def run_distributed(self, image_topic, restart_topic):
         image_subscriber   = rospy.Subscriber(image_topic, Image, self.image_callback, queue_size=1)
         restart_subscriber = rospy.Subscriber(restart_topic, String, self.restart_callback, queue_size=1)
-        start_new_thread(rospy.spin(), None)
+        start_new_thread(self.ros_spinning(), "")
         print ">> Recognizer is running"
         while self.doRun:
             time.sleep(0.01)
