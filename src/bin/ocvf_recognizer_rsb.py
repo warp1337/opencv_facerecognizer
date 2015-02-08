@@ -116,12 +116,13 @@ class Recognizer(object):
             image = self.lastImage.get(True)
             # This should not be resized with a fixed rate, this should be rather configured by the sender
             # i.e. by sending smaller images. Don't fiddle with input data in two places.
-            img = cv2.resize(image, (image.shape[1] / 2, image.shape[0] / 2), interpolation=cv2.INTER_CUBIC)
+            # img = cv2.resize(image, (image.shape[1] / 2, image.shape[0] / 2), interpolation=cv2.INTER_CUBIC)
+            img = cv2.resize(image, (320, 240), interpolation=cv2.INTER_CUBIC)
             imgout = image.copy()
-            for i, r in enumerate(self.detector.detect(image)):
+            for i, r in enumerate(self.detector.detect(img)):
                 x0, y0, x1, y1 = r
                 # (1) Get face, (2) Convert to grayscale & (3) resize to image_size:
-                face = image[y0:y1, x0:x1]
+                face = img[y0:y1, x0:x1]
                 face = cv2.cvtColor(face, cv2.COLOR_BGR2GRAY)
                 face = cv2.resize(face, self.model.image_size, interpolation=cv2.INTER_CUBIC)
                 prediction = self.model.predict(face)
