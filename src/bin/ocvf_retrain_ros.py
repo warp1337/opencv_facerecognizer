@@ -41,11 +41,12 @@ from std_msgs.msg import String
 def restart(topic):
     pub = rospy.Publisher(topic, String, queue_size=1)
     rospy.init_node('ocvfacerec_ros_restart', anonymous=True)
-    _str = "restart"
-    pub.publish(_str)
+    msg = "restart"
+    pub.publish(msg)
+    print ">> Sent %s to Topic %s" % (msg, topic)
 
 if __name__ == '__main__':
-    usage = "Usage: %prog [options]"
+    usage = ">> Usage: %prog [options]"
     parser = optparse.OptionParser(usage=usage)
     parser.add_option("-t", "--topic", action="store", type="string", dest="topic", default="/ocvfacerec/ros/restart",
                       help="Send a Restart Command to this Scope")
