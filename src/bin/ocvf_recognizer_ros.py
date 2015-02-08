@@ -68,7 +68,7 @@ class RosPeople:
 
 
 def ros_spinning(message="None"):
-        print ">> ROS is spinning"
+        print ">> ROS is spinning()"
         rospy.spin()
 
 
@@ -169,7 +169,7 @@ class Recognizer(object):
         while self.doRun:
             time.sleep(0.01)
             pass
-
+        print ">> Deactivating ROS Subscriber"
 
 if __name__ == '__main__':
     # model.pkl is a pickled (hopefully trained) PredictableModel, which is
@@ -226,8 +226,7 @@ if __name__ == '__main__':
 
     print ">> Loading Model <-- " + str(model_filename)
     model = load_model(model_filename)
-    # We operate on an ExtendedPredictableModel. Quit the Recognizerlication if this
-    # isn't what we expect it to be:
+    # We operate on an ExtendedPredictableModel.
     if not isinstance(model, ExtendedPredictableModel):
         print ">> Error: The given model is not of type '%s'." % "ExtendedPredictableModel"
         sys.exit(1)
