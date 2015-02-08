@@ -243,7 +243,7 @@ if __name__ == '__main__':
                    wait=options.wait_time, rp=rp)
     x.run_distributed(str(options.ros_source), str(options.restart_notification))
     while x.restart:
-        time.sleep(1)
+        time.sleep(5)
         model = load_model(model_filename)
         x = Recognizer(model=model, cascade_filename=options.cascade_filename, run_local=False,
                        wait=options.wait_time, rp=rp)
