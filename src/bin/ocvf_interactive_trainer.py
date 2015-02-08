@@ -77,11 +77,11 @@ class Trainer(object):
         signal.signal(signal.SIGINT, signal_handler)
 
     def run(self):
-        print ">> Path to training data: %s " % self.training_data_path
+        print ">> Path to training data images: %s " % self.training_data_path
         print ">> Path to model: %s" % self.model_path
         print ">> Middleware: %s" % self.middleware_type
-        print ">> Image source: %s " % self.image_source
-        print ">> Re-Train command source: %s" % self.retrain_source
+        print ">> Camera source: %s " % self.image_source
+        print ">> Re-Train command scope %s" % self.retrain_source
 
         try:
             self.middleware.activate(self.image_source, self.retrain_source, self.restart_target)
@@ -168,9 +168,9 @@ class Trainer(object):
         print ">> Re-Training is running..."
         walk_result = [x[0] for x in os.walk(self.training_data_path)][1:]
         if len(walk_result) > 0:
-            print ">>\tPersons available for training: ", ", ".join([x.split("/")[-1] for x in walk_result])
+            print ">> Persons available for training: ", ", ".join([x.split("/")[-1] for x in walk_result])
         else:
-            print ">>\tNo persons found for training"
+            print ">> No persons found for training"
             return
 
         trainer = TheTrainer(self.training_data_path, self.image_size, self.model_path, _numfolds=options.numfolds)
