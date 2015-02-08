@@ -143,11 +143,8 @@ class Trainer(object):
             else:
                 continue
 
-            if options.middleware_type == 'rsb':
-                im = Image.fromarray(cv2.cvtColor(input_image, cv2.COLOR_BGR2RGB))
-                cropped_image = face_crop_single_image(im, cascade)
-            else:
-                cropped_image = face_crop_single_image(input_image, cascade)
+            im = Image.fromarray(cv2.cvtColor(input_image, cv2.COLOR_BGR2RGB))
+            cropped_image = face_crop_single_image(im, cascade)
 
             ok_shot = False
             if cropped_image:
