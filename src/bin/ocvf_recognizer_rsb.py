@@ -116,9 +116,10 @@ class Recognizer(object):
             image = self.lastImage.get(True)
             # This should not be resized with a fixed rate, this should be rather configured by the sender
             # i.e. by sending smaller images. Don't fiddle with input data in two places.
+
             # img = cv2.resize(image, (image.shape[1] / 2, image.shape[0] / 2), interpolation=cv2.INTER_CUBIC)
             img = cv2.resize(image, (320, 240), interpolation=cv2.INTER_CUBIC)
-            imgout = image.copy()
+            imgout = img.copy()
             for i, r in enumerate(self.detector.detect(img)):
                 x0, y0, x1, y1 = r
                 # (1) Get face, (2) Convert to grayscale & (3) resize to image_size:
@@ -136,7 +137,7 @@ class Recognizer(object):
                 # Draw the predicted name (folder name...):
                 draw_str(imgout, (x0 - 20, y0 - 40), "Label " + self.model.subject_names[predicted_label])
                 draw_str(imgout, (x0 - 20, y0 - 20), "Distance " + "%1.2f" % distance)
-            cv2.imshow('OCVFACEREC RSB CAMERA', imgout)
+            cv2.imshow('OCVFACEREC RSB CAMERA (Fixed Scale 320x240)', imgout)
             # TODO Implement Result Informer
             # cr   = ClassificationResult()
             # crwp = ClassificationResult.ClassWithProbability()
