@@ -109,6 +109,7 @@ class Recognizer(object):
         self.last_restart_request.put(restart_event.data, False)
 
     def run_distributed(self):
+        print ">> Activating RSB listener"
         self.listener.addHandler(self.add_last_image)
         self.restart_listener.addHandler(self.add_restart_request)
         informer = rsb.createInformer("/ocvfacerec/rsb/people", dataType=ClassificationResult)
