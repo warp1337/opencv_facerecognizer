@@ -42,11 +42,10 @@ import numpy as np
 # OCVF imports
 from ocvfacerec.facerec.feature import Fisherfaces
 from ocvfacerec.facerec.model import PredictableModel
-from ocvfacerec.facedet.detector import CascadedDetector
 from ocvfacerec.facerec.distance import EuclideanDistance
 from ocvfacerec.facerec.classifier import NearestNeighbor
 from ocvfacerec.facerec.validation import KFoldCrossValidation
-from ocvfacerec.facerec.serialization import save_model, load_model
+from ocvfacerec.facerec.serialization import save_model
 
 
 class ExtendedPredictableModel(PredictableModel):
@@ -68,7 +67,8 @@ class TheTrainer():
         self.model_filename = _model_filename
         self.numfolds = _numfolds
 
-    def read_images(self, path, image_size=None):
+    @staticmethod
+    def read_images(path, image_size=None):
         """Reads the images in a given folder, resizes images on the fly if size is given.
 
         Args:
@@ -106,7 +106,8 @@ class TheTrainer():
                 c = c + 1
         return [X, y, folder_names]
 
-    def get_model(self, image_size, subject_names):
+    @staticmethod
+    def get_model(image_size, subject_names):
         """ This method returns the PredictableModel which is used to learn a model
             for possible further usage. If you want to define your own model, this
             is the method to return it from!

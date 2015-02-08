@@ -78,10 +78,10 @@ class Trainer(object):
 
     def run(self):
         print ">> Path to training data: %s " % self.training_data_path
-        print ">> Path to model: %s\n" % self.model_path
-        print ">> Middleware used: %s" % self.middleware_type
+        print ">> Path to model: %s" % self.model_path
+        print ">> Middleware: %s" % self.middleware_type
         print ">> Image source: %s " % self.image_source
-        print ">> Re-Train command source: %s\n" % self.retrain_source
+        print ">> Re-Train command source: %s" % self.retrain_source
 
         try:
             self.middleware.activate(self.image_source, self.retrain_source, self.restart_target)
