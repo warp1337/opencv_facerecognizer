@@ -116,7 +116,7 @@ class Recognizer(object):
             image = self.lastImage.get(True)
             # This should not be resized with a fixed rate, this should be rather configured by the sender
             # i.e. by sending smaller images. Don't fiddle with input data in two places.
-            # img = cv2.resize(image, (image.shape[1] / 2, image.shape[0] / 2), interpolation=cv2.INTER_CUBIC)
+            img = cv2.resize(image, (image.shape[1] / 2, image.shape[0] / 2), interpolation=cv2.INTER_CUBIC)
             imgout = image.copy()
             for i, r in enumerate(self.detector.detect(image)):
                 x0, y0, x1, y1 = r

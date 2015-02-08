@@ -220,7 +220,7 @@ if __name__ == '__main__':
                         help="Storage path for the training data files (default: %default).")
 
     group_algorithm.add_option("-n", "--training-images", action="store",
-                               dest="training_image_number", type="int", default=30,
+                               dest="training_image_number", type="int", default=70,
                                help="Number of images to use for training of a new person(default: %default).")
     group_algorithm.add_option("-r", "--resize", action="store", type="string", dest="image_size", default="70x70",
                                help="Resizes the given and new dataset(s) to a given size in format [width]x[height] (default: %default).")
@@ -229,7 +229,7 @@ if __name__ == '__main__':
     group_algorithm.add_option("-c", "--cascade", action="store", dest="cascade_filename",
                                default="haarcascade_frontalface_alt2.xml",
                                help="Sets the path to the Haar Cascade used for the face detection part (default: %default).")
-    group_algorithm.add_option("-l", "--mugshot-size", action="store", type="int", dest="mugshot_size", default=110,
+    group_algorithm.add_option("-l", "--mugshot-size", action="store", type="int", dest="mugshot_size", default=100,
                                help="Sets minimal size (in pixels) required for a mugshot of a person in order to use it for training (default: %default).")
 
     parser.add_option_group(group_mw)
