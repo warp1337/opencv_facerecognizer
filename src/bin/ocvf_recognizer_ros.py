@@ -157,7 +157,7 @@ class Recognizer(object):
             pass
 
     def restart_callback(self, ros_data):
-        print ">> Received Restart Request %s" % str(ros_data.data)
+        print ">> Received Restart Request"
         if "restart" in str(ros_data):
             self.ros_restart_request = True
 
