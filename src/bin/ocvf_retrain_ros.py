@@ -33,14 +33,15 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 import sys
+import time
 import rospy
 import optparse
 from std_msgs.msg import String
 
 
 def restart(topic):
-    pub = rospy.Publisher(topic, String, queue_size=2)
-    rospy.init_node('rosrestart', anonymous=True)
+    pub = rospy.Publisher(topic, String, queue_size=10)
+    rospy.init_node('rosrestart', anonymous=False)
     msg = "restart"
     rospy.loginfo(msg)
     pub.publish(msg)
@@ -53,11 +54,9 @@ if __name__ == '__main__':
                       help="Send a Restart Command to this Scope")
     (options, args) = parser.parse_args()
 
-    #if len(sys.argv) < 2:
-    #    print "You need to provide a person_label"
-    #    parser.print_help()
-
     try:
         restart(options.topic)
-    except rospy.ROSInterruptException:
+        time.sleep(1)
+    except rospy.ROSInterruptException, e:
+        print e
         pass
