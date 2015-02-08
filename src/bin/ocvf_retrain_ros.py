@@ -46,7 +46,6 @@ def restart(topic, name):
     pub = rospy.Publisher(topic, String, queue_size=1)
     rospy.init_node('ros_restart', anonymous=True)
     msg = name
-    rospy.loginfo(msg)
     pub.publish(msg)
     print ">> Sent %s to Topic %s" % (msg, topic)
 
@@ -61,7 +60,7 @@ if __name__ == '__main__':
         parser.print_help()
         sys.exit(1)
     try:
-        restart(options.topic, str(sys.argv[1]))
+        restart(options.topic, sys.argv[1])
         time.sleep(1)
     except rospy.ROSInterruptException, ex:
         print ex
