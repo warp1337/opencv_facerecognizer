@@ -61,12 +61,12 @@ class ROSConnector(MiddlewareConnector):
 
     def add_last_image(self, image_data):
         try:
-            self.lastImage.get(False)
+            self.last_image.get(False)
         except Exception, e:
             print e
         try:
             cv_image = self.bridge.imgmsg_to_cv2(image_data, "bgr8")
-            self.lastImage.put(cv_image, False)
+            self.last_image.put(cv_image, False)
         except Exception, e:
             print e
 
