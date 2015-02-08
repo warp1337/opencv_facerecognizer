@@ -296,7 +296,6 @@ def detect_face(image, face_cascade, return_image=False):
             pt1 = (int(x), int(y))
             pt2 = (int(x + w), int(y + h))
             cv.Rectangle(image, pt1, pt2, cv.RGB(255, 0, 0), 5, 8, 0)
-
     if return_image:
         return image
     else:
@@ -314,11 +313,9 @@ def pil2_cvgrey(pil_im):
 
 def img_crop(image, crop_box, box_scale=1):
     # Crop a PIL image with the provided box [x(left), y(upper), w(width), h(height)]
-
     # Calculate scale factors
     x_delta = max(crop_box[2] * (box_scale - 1), 0)
     y_delta = max(crop_box[3] * (box_scale - 1), 0)
-
     # Convert cv box to PIL box [left, upper, right, lower]
     pil_box = [crop_box[0] - x_delta, crop_box[1] - y_delta, crop_box[0] + crop_box[2] + x_delta,
                crop_box[1] + crop_box[3] + y_delta]
@@ -327,10 +324,10 @@ def img_crop(image, crop_box, box_scale=1):
 
 
 def face_crop_single_image(pil_image, face_cascade, box_scale=1):
+
     cv_im = pil2_cvgrey(pil_image)
     faces = detect_face(cv_im, face_cascade)
     face_list = []
-
     cropped_image = None
     if faces:
         for face in faces:
@@ -342,7 +339,7 @@ def face_crop_single_image(pil_image, face_cascade, box_scale=1):
 def mkdir_p(path):
     try:
         os.makedirs(path)
-    except OSError as exc:  # Python >2.5
+    except OSError as exc:
         if exc.errno == errno.EEXIST and os.path.isdir(path):
             pass
         else:
