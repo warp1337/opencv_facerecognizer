@@ -40,8 +40,9 @@ from std_msgs.msg import String
 
 def restart(topic):
     pub = rospy.Publisher(topic, String, queue_size=1)
-    rospy.init_node('ocvfacerec_ros_restart', anonymous=True)
+    rospy.init_node('rosrestart', anonymous=True)
     msg = "restart"
+    rospy.loginfo(msg)
     pub.publish(msg)
     print ">> Sent %s to Topic %s" % (msg, topic)
 
