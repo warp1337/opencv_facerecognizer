@@ -119,7 +119,7 @@ class Trainer(object):
                 traceback.print_exc()
                 continue
 
-        print ">> Deactivating Middleware ..."
+        print ">> Deactivating Middleware..."
         self.middleware.deactivate()
         print ">> Done"
 
