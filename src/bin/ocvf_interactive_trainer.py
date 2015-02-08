@@ -56,7 +56,7 @@ class Trainer(object):
         self.restart_target        = _options.restart_target
         self.middleware_type       = _options.middleware_type
         self.training_data_path    = _options.training_data_path
-        self.cascade_filename      = cv2.Load(_options.cascade_filename)
+        self.cascade_filename      = cv2.CascadeClassifier(_options.cascade_filename)
         self.training_image_number = _options.training_image_number
         try:
             self.image_size = (int(_options.image_size.split("x")[0]), int(_options.image_size.split("x")[1]))
