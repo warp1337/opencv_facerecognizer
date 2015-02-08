@@ -115,7 +115,7 @@ class Trainer(object):
                 else:
                     print ">> Unable to Collect Enough Images"
 
-                print ">> Done Collecting\n"
+                print ">> Done Collecting"
 
             except Exception, e:
                 print ">> Error: ", e
@@ -237,7 +237,6 @@ if __name__ == '__main__':
     parser.add_option_group(group_algorithm)
 
     (options, args) = parser.parse_args()
-    print "\n"
 
     try:
         mkdir_p(os.path.basename(options.model_path))
