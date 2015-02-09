@@ -96,7 +96,7 @@ Installing OCVF Package (non-sudo)
 Jump Start Basic
 -----------------
 
-In case you just want to try this out, execute the following assuming you installed OCVF correctly (non-sudo variant).
+In case you just want to try this out, execute the following assuming you installed OCVF correctly (non-sudo variant)
 as described above.
 
     export PYTHONPATH=~/custom-prefix/lib/python2.7/site-packages:$PYTHONPATH
