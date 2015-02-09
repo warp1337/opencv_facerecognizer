@@ -1,3 +1,5 @@
+![ocvf example output](doc/images/ocvf_example.jpg)
+
 OpenCV FaceRecognizer
 =======================
 
