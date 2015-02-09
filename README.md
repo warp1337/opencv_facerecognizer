@@ -37,7 +37,7 @@ Minimal Dependencies:
     sudo apt-get install python-dev python python-scipy python-imaging-* python-opencv python-setuptools
 
 The most basic application, **ocvf_recognizer.py** will work without *ROS* or *RSB*. However, if you want to
-make use of typed message passing please install the following
+make use of typed message passing and on-the-fly model training please install one of the following (RSB or ROS).
 
 Dependencies ROS (Indigo):
 
@@ -48,7 +48,7 @@ Dependencies ROS (Groovy):
     sudo apt-get ros-groovy-desktop ros-groovy-people-msgs ros-groovy-usb-cam
 
 *Hint*: You might save some disk space by installing ros-[*indigo*|*groovy*]-base. We haven't actually
-checked if they contain all required packages. If so, you need to install missing packages manually.
+checked if they contain all required packages. If not, you need to install missing packages manually, obviously.
 
 [General ROS Install Instructions](http://wiki.ros.org/indigo/Installation/Ubuntu)
 
@@ -179,8 +179,8 @@ Distributed Recognition RSB
     python ocvf_recognizer_rsb.py -c </path/to/cascade.xml> </path/to/model.pkl>
 
 
-Distributed Re-Training ROS
-----------------------------
+Distributed Model Training ROS
+-------------------------------
 
 Distributed, or live training means you can either re-train an individual on the fly, or add more subjects to your
 model. You just need to follow the instructions below.
@@ -213,8 +213,8 @@ is restarted (in the Recognizer Terminal) using the updated model file as soon a
 You just successfully updated/added a person in/to your model! Much wow!
 
 
-Distributed Re-Training RSB
-----------------------------
+Distributed Model Training RSB
+-------------------------------
 
 In the first Terminal (Interactive Trainer)
 
