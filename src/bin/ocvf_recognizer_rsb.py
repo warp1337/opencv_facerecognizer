@@ -8,7 +8,7 @@
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
-#   * Redistributions of source code must retain the above copyright
+# * Redistributions of source code must retain the above copyright
 #     notice, this list of conditions and the following disclaimer.
 #   * Redistributions in binary form must reproduce the above copyright
 #     notice, this list of conditions and the following disclaimer in the
@@ -99,7 +99,7 @@ class Recognizer(object):
             self.lastImage.get(False)
         except Exception, e:
             pass
-        self.lastImage.put(np.asarray(image_event.data[:,:]), False)
+        self.lastImage.put(np.asarray(image_event.data[:, :]), False)
 
     def add_restart_request(self, restart_event):
         try:
@@ -138,7 +138,7 @@ class Recognizer(object):
                 cv2.rectangle(imgout, (x0, y0), (x1, y1), (0, 0, 255), 2)
                 # Draw the predicted name (folder name...):
                 draw_str(imgout, (x0 - 20, y0 - 40), "Label " + self.model.subject_names[predicted_label])
-                draw_str(imgout, (x0 - 20, y0 - 20), "Distance " + "%1.2f" % distance)
+                draw_str(imgout, (x0 - 20, y0 - 20), "Feature Distance " + "%1.1f" % distance)
             cv2.imshow('OCVFACEREC < RSB STREAM', imgout)
             # TODO Implement Result Informer (ClassificationResult)
             # cr   = ClassificationResult()
@@ -161,6 +161,7 @@ class Recognizer(object):
         self.restart_listener.deactivate()
         # informer.deactivate()
 
+
 if __name__ == '__main__':
     # model.pkl is a pickled (hopefully trained) PredictableModel, which is
     # used to make predictions. You can learn a model yourself by passing the
@@ -176,8 +177,10 @@ if __name__ == '__main__':
                       help="Trains the model on the given dataset.")
     parser.add_option("-c", "--cascade", action="store", dest="cascade_filename",
                       help="Sets the path to the Haar Cascade used for the face detection part [haarcascade_frontalface_alt2.xml].")
-    parser.add_option("-s", "--rsb-source", action="store", dest="rsb_source", default="/rsbopencv/ipl", help="Grab video from RSB Middleware")
-    parser.add_option("-n", "--restart-notification", action="store", dest="restart_notification", default="/ocvfacerec/restart",
+    parser.add_option("-s", "--rsb-source", action="store", dest="rsb_source", default="/rsbopencv/ipl",
+                      help="Grab video from RSB Middleware (default: %default)")
+    parser.add_option("-n", "--restart-notification", action="store", dest="restart_notification",
+                      default="/ocvfacerec/restart",
                       help="Target Topic where a simple restart message is received (default: %default).")
     parser.add_option("-w", "--wait", action="store", dest="wait_time", default=20, type="int",
                       help="Amount of time (in ms) to sleep between face identification frames (default: %default).")

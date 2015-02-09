@@ -8,7 +8,7 @@
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
-#   * Redistributions of source code must retain the above copyright
+# * Redistributions of source code must retain the above copyright
 #     notice, this list of conditions and the following disclaimer.
 #   * Redistributions in binary form must reproduce the above copyright
 #     notice, this list of conditions and the following disclaimer in the
@@ -49,10 +49,12 @@ def restart(topic, name):
     pub.publish(msg)
     print ">> Sent %s to Topic %s" % (msg, topic)
 
+
 if __name__ == '__main__':
     usage = ">> Usage: %prog [options] <person_label>"
     parser = optparse.OptionParser(usage=usage)
-    parser.add_option("-t", "--topic", action="store", type="string", dest="topic", default="/ocvfacerec/trainer/retrainperson",
+    parser.add_option("-t", "--topic", action="store", type="string", dest="topic",
+                      default="/ocvfacerec/trainer/retrainperson",
                       help="Send a Re-Train Command to this Scope")
     (options, args) = parser.parse_args()
     if len(sys.argv) < 2:

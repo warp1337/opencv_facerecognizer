@@ -8,7 +8,7 @@
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
-#   * Redistributions of source code must retain the above copyright
+# * Redistributions of source code must retain the above copyright
 #     notice, this list of conditions and the following disclaimer.
 #   * Redistributions in binary form must reproduce the above copyright
 #     notice, this list of conditions and the following disclaimer in the
@@ -50,16 +50,16 @@ from ocvfacerec.trainer.thetrainer import TheTrainer
 class Trainer(object):
     def __init__(self, _options, _middelware_connector):
         self.counter = 0
-        self.middleware            = _middelware_connector
-        self.image_source          = _options.image_source
-        self.mugshot_size          = _options.mugshot_size
-        self.retrain_source        = _options.retrain_source
-        self.restart_target        = _options.restart_target
-        self.restart_recgonizer    = _options.restart_target
-        self.middleware_type       = _options.middleware_type
-        self.training_data_path    = _options.training_data_path
+        self.middleware = _middelware_connector
+        self.image_source = _options.image_source
+        self.mugshot_size = _options.mugshot_size
+        self.retrain_source = _options.retrain_source
+        self.restart_target = _options.restart_target
+        self.restart_recgonizer = _options.restart_target
+        self.middleware_type = _options.middleware_type
+        self.training_data_path = _options.training_data_path
         self.training_image_number = _options.training_image_number
-        self.cascade_filename      = _options.cascade_filename
+        self.cascade_filename = _options.cascade_filename
         try:
             self.image_size = (int(_options.image_size.split("x")[0]), int(_options.image_size.split("x")[1]))
         except Exception, e:
@@ -239,9 +239,11 @@ if __name__ == '__main__':
 
     if options.middleware_type == "rsb":
         from ocvfacerec.mwconnector.rsbconnector import RSBConnector
+
         Trainer(options, RSBConnector()).run()
     elif options.middleware_type == "ros":
         from ocvfacerec.mwconnector.rosconnector import ROSConnector
+
         Trainer(options, ROSConnector()).run()
     else:
         print ">> Error: Middleware %s not supported" % options.middleware_type
