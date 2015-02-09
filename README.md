@@ -5,20 +5,20 @@ OpenCV FaceRecognizer
 
 First things first: this software package is based on the great work of Philipp Wagner [1]. However,
 Norman Koester and me (Florian Lier) created this package in order to provide a **distributed** and **dynamic**
-on-the-fly learning approach to OpenCV based face recognition (and detection) using current robotics middleware
+on-the-fly learning approach to OpenCV based face detection and **recognition** (learning) using current robotics middleware
 implementations and standardized installation and roll-out routines, as well as a jump start training set. 
 At the time of writing RSB [2] and ROS [3] are supported.
 
-* Changes
+* Major Changes
     * Decoupling and modularization of Py-Packages
-    * "Live" re-training of individuals
-    * "Live" recognizer restart using an updated model
+    * On-the-fly re-training (learning) of individuals
+    * On-the-fly recognizer restart using an updated model
     * Setuptools support for ease of installation
     * ROS and RSB middleware support
-    * Typed messages
-    * Distributed camera streams based on ROS and RSB
-    * Published classification results
-    * Convenience Tools (cropper etc.)
+    * Typed messages (middleware specific)
+    * Distributed camera streams
+    * Published classification results (middleware specific)
+    * Convenience Tools (face cropper etc.)
 
 This documentation is *minimalistic*, which means it provides basic information on how to train
 a model and run this software stack. If you need detailed information about the _internals_
