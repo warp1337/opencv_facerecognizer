@@ -178,7 +178,7 @@ if __name__ == '__main__':
     parser.add_option("-c", "--cascade", action="store", dest="cascade_filename",
                       help="Sets the path to the Haar Cascade used for the face detection part [haarcascade_frontalface_alt2.xml].")
     parser.add_option("-s", "--rsb-source", action="store", dest="rsb_source", default="/rsbopencv/ipl",
-                      help="Grab video from RSB Middleware")
+                      help="Grab video from RSB Middleware (default: %default)")
     parser.add_option("-n", "--restart-notification", action="store", dest="restart_notification",
                       default="/ocvfacerec/restart",
                       help="Target Topic where a simple restart message is received (default: %default).")
