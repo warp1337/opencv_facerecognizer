@@ -33,7 +33,6 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 # STD Imports
-import sys
 import time
 import rospy
 import optparse
@@ -57,12 +56,11 @@ if __name__ == '__main__':
                       default="/ocvfacerec/trainer/retrainperson",
                       help="Send a Re-Train Command to this Scope")
     (options, args) = parser.parse_args()
-    if len(sys.argv) < 2:
-        print ">> You need to provide a person_label"
-        parser.print_help()
-        sys.exit(1)
+    if len(args) < 1:
+        print "[WARNING]: You did not provide a person_label - will only retrain and restart the classifier!"
+        args.append("")
     try:
-        restart(options.topic, sys.argv[1])
+        restart(options.topic, str(args[0]))
         time.sleep(1)
     except rospy.ROSInterruptException, ex:
         print ex

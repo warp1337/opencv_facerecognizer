@@ -33,7 +33,6 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 import rsb
-import sys
 import logging
 import optparse
 
@@ -47,9 +46,9 @@ if __name__ == '__main__':
     # Pacify logger.
     logging.basicConfig()
     if len(args) < 1:
-        print "You need to provide a person_label"
-        parser.print_help()
-        sys.exit(1)
+        print "Warning: You did not provide a person_label - will only retrain and restart the classifier!"
+        args.append("")
+
     with rsb.createInformer(options.scope, dataType=str) as informer:
         print "Publishing name '%s' to scope '%s'" % (str(args[0]), options.scope)
         informer.publishData(str(args[0]))
