@@ -107,17 +107,17 @@ if __name__ == '__main__':
     print "\n"
     # Check if a model name was passed:
     if len(args) == 0:
-        print ">> [Error] No prediction model was given."
+        print ">> Error: No prediction model was given."
         sys.exit(1)
     # This model will be used (or created if the training parameter (-t, --train) exists:
     model_filename = args[0]
     # Check if the given model exists, if no dataset was passed:
     if (options.dataset is None) and (not os.path.exists(model_filename)):
-        print ">> [Error] No prediction model found at '%s'." % model_filename
+        print ">> Error: No prediction model found at '%s'." % model_filename
         sys.exit(1)
     # Check if the given (or default) cascade file exists:
     if not os.path.exists(options.cascade_filename):
-        print ">> [Error] No Cascade File found at '%s'." % options.cascade_filename
+        print ">> Error: No Cascade File found at '%s'." % options.cascade_filename
         sys.exit(1)
     # We are resizing the images to a fixed size, as this is neccessary for some of
     # the algorithms, some algorithms like LBPH don't have this requirement. To 
@@ -126,13 +126,13 @@ if __name__ == '__main__':
     try:
         image_size = (int(options.size.split("x")[0]), int(options.size.split("x")[1]))
     except Exception, e:
-        print ">> [Error] Unable to parse the given image size '%s'. Please pass it in the format [width]x[height]!" % options.size
+        print ">> Error: Unable to parse the given image size '%s'. Please pass it in the format [width]x[height]!" % options.size
         sys.exit(1)
     # We have got a dataset to learn a new model from:
     if options.dataset:
         # Check if the given dataset exists:
         if not os.path.exists(options.dataset):
-            print ">> [Error] No dataset found at '%s'." % options.dataset
+            print ">> Error: No dataset found at '%s'." % options.dataset
             sys.exit(1)
             # Reads the images, labels and folder_names from a given dataset. Images
 
@@ -144,11 +144,11 @@ if __name__ == '__main__':
     # We operate on an ExtendedPredictableModel. Quit the Recognizerlication if this
     # isn't what we expect it to be:
     if not isinstance(model, ExtendedPredictableModel):
-        print ">> [Error] The given model is not of type '%s'." % "ExtendedPredictableModel"
+        print ">> Error: The given model is not of type '%s'." % "ExtendedPredictableModel"
         sys.exit(1)
     # Now it's time to finally start the Recognizerlication! It simply get's the model
     # and the image size the incoming webcam or video images are resized to:
-    print ">> Using Local Camera <-- " + "/dev/video " + str(options.camera_id)
+    print ">> Using Local Camera <-- " + "/dev/video" + str(options.camera_id)
     Recognizer(model=model, camera_id=options.camera_id, cascade_filename=options.cascade_filename, run_local=True,
                wait=options.wait_time).run()
 
