@@ -8,7 +8,7 @@
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
-#   * Redistributions of source code must retain the above copyright
+# * Redistributions of source code must retain the above copyright
 #     notice, this list of conditions and the following disclaimer.
 #   * Redistributions in binary form must reproduce the above copyright
 #     notice, this list of conditions and the following disclaimer in the
@@ -55,7 +55,8 @@ class Recognizer(object):
         while True:
             ret, frame = self.cam.read()
             # Resize the frame to half the original size for speeding up the detection process:
-            img = cv2.resize(frame, (frame.shape[1] / 2, frame.shape[0] / 2), interpolation=cv2.INTER_CUBIC)
+            # img = cv2.resize(frame, (frame.shape[1] / 2, frame.shape[0] / 2), interpolation=cv2.INTER_CUBIC)
+            img = cv2.resize(frame, (320, 240), interpolation=cv2.INTER_CUBIC)
             imgout = img.copy()
             for i, r in enumerate(self.detector.detect(img)):
                 x0, y0, x1, y1 = r
@@ -73,12 +74,13 @@ class Recognizer(object):
                 cv2.rectangle(imgout, (x0, y0), (x1, y1), (0, 0, 255), 2)
                 # Draw the predicted name (folder name...):
                 draw_str(imgout, (x0 - 20, y0 - 40), "Label " + self.model.subject_names[predicted_label])
-                draw_str(imgout, (x0 - 20, y0 - 20), "Distance " + "%1.2f" % distance)
+                draw_str(imgout, (x0 - 20, y0 - 20), "Feature Distance " + "%1.1f" % distance)
             cv2.imshow('OCVFACEREC LOCAL CAMERA (q = Exit)', imgout)
             key = cv2.waitKey(self.wait)
             if 'q' == chr(key & 255):
                 print ">> 'q' Pressed. Exiting."
                 break
+
 
 if __name__ == '__main__':
     from optparse import OptionParser
@@ -147,5 +149,6 @@ if __name__ == '__main__':
     # Now it's time to finally start the Recognizerlication! It simply get's the model
     # and the image size the incoming webcam or video images are resized to:
     print ">> Using Local Camera <-- " + "/dev/video " + str(options.camera_id)
-    Recognizer(model=model, camera_id=options.camera_id, cascade_filename=options.cascade_filename, run_local=True, wait=options.wait_time).run()
+    Recognizer(model=model, camera_id=options.camera_id, cascade_filename=options.cascade_filename, run_local=True,
+               wait=options.wait_time).run()
 
