@@ -33,36 +33,34 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 # STD Imports
-import os
+from Queue import Queue
 import cv2
+from optparse import OptionParser
+import os
+import signal
 import sys
 import time
-import signal
-import logging
+
+import rsb
+from rst.classification.ClassificationResult_pb2 import ClassificationResult
+from rstconverters.opencv import IplimageConverter
+from rstsandbox.classification.ClassificationResults_pb2 import ClassificationResults
+
 import numpy as np
-from Queue import Queue
-from optparse import OptionParser
+from ocvfacerec.facedet.detector import CascadedDetector
+from ocvfacerec.facerec.serialization import load_model
+from ocvfacerec.helper.PersonWrapper import PersonWrapper
+from ocvfacerec.helper.common import *
+from ocvfacerec.trainer.thetrainer import ExtendedPredictableModel
+from ocvfacerec.trainer.thetrainer import TheTrainer
+from rst.geometry.PointCloud2DInt_pb2 import PointCloud2DInt
+
 
 # OCVF Imports
-from ocvfacerec.helper.common import *
-from ocvfacerec.trainer.thetrainer import TheTrainer
-from ocvfacerec.facerec.serialization import load_model
-from ocvfacerec.facedet.detector import CascadedDetector
-from ocvfacerec.trainer.thetrainer import ExtendedPredictableModel
-
 # RSB Specifics
-import rsb
-import rstsandbox
-from rsb.converter import ProtocolBufferConverter
-from rsb.converter import registerGlobalConverter
-from rstconverters.opencv import IplimageConverter
-from rst.geometry.PointCloud2DInt_pb2 import PointCloud2DInt
-from rst.classification.ClassificationResult_pb2 import ClassificationResult
-
-
 class Recognizer(object):
     def __init__(self, model, camera_id, cascade_filename, run_local, inscope="/rsbopencv/ipl",
-                 wait=50, notification="/ocvfacerec/rsb/restart/"):
+                 outscope="/rsbopencv/persons", wait=50, notification="/ocvfacerec/rsb/restart/"):
         self.model = model
         self.wait = wait
         self.notification_scope = notification
@@ -80,17 +78,30 @@ class Recognizer(object):
             self.doRun = False
 
         signal.signal(signal.SIGINT, signal_handler)
+
         # RSB
         try:
-            registerGlobalConverter(IplimageConverter())
-            registerGlobalConverter(ProtocolBufferConverter(messageClass=ClassificationResult))
+            rsb.converter.registerGlobalConverter(IplimageConverter())
         except Exception, e:
+            # If they are already loaded, the lib throws an exception ...
+            # print ">> [Error] While loading RST converter: ", e
             pass
-            # print ">> [Error] ", e
+
         self.listener = rsb.createListener(inscope)
         self.lastImage = Queue(1)
+
         self.restart_listener = rsb.createListener(self.notification_scope)
         self.last_restart_request = Queue(1)
+
+        try:
+            rsb.converter.registerGlobalConverter(rsb.converter.ProtocolBufferConverter(messageClass=ClassificationResults))
+        except Exception, e:
+            # If they are already loaded, the lib throws an exception ...
+            # print ">> [Error] While loading RST converter: ", e
+            pass
+
+        self.person_publisher = rsb.createInformer(outscope, dataType=ClassificationResults)
+
         # This must be set at last!
         rsb.setDefaultParticipantConfig(rsb.ParticipantConfig.fromDefaultSources())
 
@@ -99,7 +110,7 @@ class Recognizer(object):
             self.lastImage.get(False)
         except Exception, e:
             pass
-        self.lastImage.put(np.asarray(image_event.data[:, :]), False)
+        self.lastImage.put((np.asarray(image_event.data[:, :]), image_event.getId()), False)
 
     def add_restart_request(self, restart_event):
         try:
@@ -107,6 +118,37 @@ class Recognizer(object):
         except Exception, e:
             pass
         self.last_restart_request.put(restart_event.data, False)
+
+    def publish_persons(self, persons, cause_uuid):
+        rsb_person_list = ClassificationResults()
+        for a_person in persons:
+
+            # The datatype can hold multiple classes of a single classification
+            new_classgroup = rsb_person_list.classes.add()
+            new_classgroup.decided_class = "0"
+            # TODO: add more abstraction to encapsulate the middleware 
+            #a_rsb_person = a_person.to_rsb_msg()
+
+            # We will just remember the most dominant one: Single class 
+            # representing a person
+            a_class = new_classgroup.classes.add()
+            a_class.name = a_person.name
+            a_class.confidence = a_person.reliability
+
+            # A ClassificationResult does not allow positions - mmhh..
+            # TODO: well fix this somehow -.-
+            # a_class.position = a_person.position
+
+        # Create the event and add the cause. Maybe some day someone will use
+        # this reference to the cause :)
+        event = rsb.Event(scope=self.person_publisher.getScope(),
+                      data=rsb_person_list,
+                      type=type(rsb_person_list),
+                      causes=[cause_uuid])
+
+        # Publish the data
+        self.person_publisher.publishEvent(event)
+
 
     def run_distributed(self):
         print ">> Activating RSB Listener"
@@ -116,38 +158,50 @@ class Recognizer(object):
         informer = rsb.createInformer("/ocvfacerec/rsb/people", dataType=ClassificationResult)
         while self.doRun:
             # GetLastImage is blocking so we won't get a "None" Image
-            image = self.lastImage.get(True)
+            image, cause_uuid = self.lastImage.get(True)
             # This should not be resized with a fixed rate, this should be rather configured by the sender
             # i.e. by sending smaller images. Don't fiddle with input data in two places.
             # img = cv2.resize(image, (image.shape[1] / 2, image.shape[0] / 2), interpolation=cv2.INTER_CUBIC)
             img = cv2.resize(image, (320, 240), interpolation=cv2.INTER_CUBIC)
             imgout = img.copy()
+
+            persons = []
             for i, r in enumerate(self.detector.detect(img)):
                 x0, y0, x1, y1 = r
                 # (1) Get face, (2) Convert to grayscale & (3) resize to image_size:
                 face = img[y0:y1, x0:x1]
                 face = cv2.cvtColor(face, cv2.COLOR_BGR2GRAY)
                 face = cv2.resize(face, self.model.image_size, interpolation=cv2.INTER_CUBIC)
+
+                # The prediction result
                 prediction = self.model.predict(face)
                 predicted_label = prediction[0]
                 classifier_output = prediction[1]
+
                 # Now let's get the distance from the assuming a 1-Nearest Neighbor.
                 # Since it's a 1-Nearest Neighbor only look take the zero-th element:
-                distance = classifier_output['distances'][0]
+                distance = float(classifier_output['distances'][0])
+                name = str(self.model.subject_names[predicted_label])
+
+                # Create a PersonWrapper
+                a_person = PersonWrapper(r, name, distance)
+                persons.append(a_person)
+
                 # Draw the face area in image:
                 cv2.rectangle(imgout, (x0, y0), (x1, y1), (0, 0, 255), 2)
                 # Draw the predicted name (folder name...):
-                draw_str(imgout, (x0 - 20, y0 - 40), "Label " + self.model.subject_names[predicted_label])
-                draw_str(imgout, (x0 - 20, y0 - 20), "Feature Distance " + "%1.1f" % distance)
+                draw_str(imgout, (x0 - 20, y0 - 40), "Label " + a_person.name)
+                draw_str(imgout, (x0 - 20, y0 - 20), "Feature Distance " + "%1.1f" % a_person.reliability)
+
             cv2.imshow('OCVFACEREC < RSB STREAM', imgout)
-            # TODO Implement Result Informer (ClassificationResult)
-            # cr   = ClassificationResult()
-            # crwp = ClassificationResult.ClassWithProbability()
-            # cr.decided_class = bytes(predicted_label)
-            # crwp.confidence = bytes(distance)
-            # cr.classes.add(crwp)
+
+            if len(persons) > 0:
+                # Publish the result
+                self.publish_persons(persons, cause_uuid)
+
             cv2.waitKey(self.wait)
 
+            # Check if external restart requested
             try:
                 z = self.last_restart_request.get(False)
                 if z:
@@ -159,6 +213,7 @@ class Recognizer(object):
         print ">> Deactivating RSB Listener"
         self.listener.deactivate()
         self.restart_listener.deactivate()
+        self.person_publisher.deactivate()
         # informer.deactivate()
 
 
@@ -179,6 +234,8 @@ if __name__ == '__main__':
                       help="Sets the path to the Haar Cascade used for the face detection part [haarcascade_frontalface_alt2.xml].")
     parser.add_option("-s", "--rsb-source", action="store", dest="rsb_source", default="/rsbopencv/ipl",
                       help="Grab video from RSB Middleware (default: %default)")
+    parser.add_option("-d", "--rsb-destination", action="store", dest="rsb_destination", default="/rsbopencv/persons",
+                      help="Target RSB scope to which persons are published (default: %default).")
     parser.add_option("-n", "--restart-notification", action="store", dest="restart_notification",
                       default="/ocvfacerec/restart",
                       help="Target Topic where a simple restart message is received (default: %default).")
@@ -220,14 +277,15 @@ if __name__ == '__main__':
         print ">> [Error] The given model is not of type '%s'." % "ExtendedPredictableModel"
         sys.exit(1)
     print ">> Using Remote RSB Camera Stream <-- " + str(options.rsb_source)
+    print ">> Publishing regognised people to --> " + str(options.rsb_destination)
     print ">> Restart Recognizer Scope <-- " + str(options.restart_notification)
     x = Recognizer(model=model, camera_id=None, cascade_filename=options.cascade_filename, run_local=False,
-                   inscope=options.rsb_source, wait=options.wait_time, notification=options.restart_notification)
+                   inscope=options.rsb_source, outscope=str(options.rsb_destination), wait=options.wait_time, notification=options.restart_notification)
     x.run_distributed()
     while x.restart:
         time.sleep(1)
         model = load_model(model_filename)
         x = Recognizer(model=model, camera_id=None, cascade_filename=options.cascade_filename, run_local=False,
-                       inscope=options.rsb_source, wait=options.wait_time, notification=options.restart_notification)
+                       inscope=options.rsb_source, outscope=str(options.rsb_destination), wait=options.wait_time, notification=options.restart_notification)
         x.run_distributed()
 

@@ -106,13 +106,20 @@ class Trainer(object):
                 continue
 
             try:
-                print ">> Training for '%s' (run %d)" % (train_name, self.counter)
-                if self.record_images(train_name):
+                # Given name == learn person and then restart classifier
+                if train_name is not "":
+                    print ">> Training for '%s' (run %d)" % (train_name, self.counter)
+                    if self.record_images(train_name):
+                        self.re_train()
+                        self.restart_classifier()
+                        self.counter += 1
+                    else:
+                        print ">> Unable to Collect Enough Images"
+                # Empty name == only restart classifier (manual data set change)
+                else:
+                    print ">> Re-training and restarting only ..."
                     self.re_train()
                     self.restart_classifier()
-                    self.counter += 1
-                else:
-                    print ">> Unable to Collect Enough Images"
 
             except Exception, e:
                 print ">> Error: ", e
