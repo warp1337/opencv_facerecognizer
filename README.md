@@ -120,6 +120,7 @@ First Terminal (RECOGNIZER)
 Second Terminal (BAG PLAY)
 
     source /opt/ros/indigo/setup.bash
+    roscore &
     rosbag play -l ~/ocvfacerecognizer/data/individuals.bag
 
 Just have a look at the recognizer output and enjoy ;)
