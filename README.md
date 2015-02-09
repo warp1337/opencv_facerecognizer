@@ -379,7 +379,7 @@ LICENSE
 -------------
 
 
-    Copyright (c) 2012.
+    Copyright (c) 2015.
     Philipp Wagner <bytefish[at]gmx[dot]de>
     Florian Lier <flier[at]techfak.uni-bielefeld.de>
     Norman Koester <nkoester[at]techfak.uni-bielefeld.de>
