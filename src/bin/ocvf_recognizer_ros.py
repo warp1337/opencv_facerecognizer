@@ -194,7 +194,7 @@ if __name__ == '__main__':
     parser.add_option("-n", "--restart-notification", action="store", dest="restart_notification",
                       default="/ocvfacerec/restart",
                       help="Target Scope where a simple restart message is received (default: %default).")
-    parser.add_option("-s", "--ros-source", action="store", dest="ros_source", help="Grab video from ROS Middleware",
+    parser.add_option("-s", "--ros-source", action="store", dest="ros_source", help="Grab video from ROS Middleware (default: %default).",
                       default="/usb_cam/image_raw")
     parser.add_option("-w", "--wait", action="store", dest="wait_time", default=20, type="int",
                       help="Amount of time (in ms) to sleep between face identification frames (default: %default).")
