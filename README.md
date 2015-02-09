@@ -291,4 +291,5 @@ AFFILIATION
 This work is supported by CoR-Lab and CITEC
 
 Florian Lier is currently with: [CITEC](http://www.cit-ec.de)
+
 Norman Koester is currently with: [CITEC](http://www.cit-ec.de) and [CoR-Lab](http://www.cor-lab.de)
