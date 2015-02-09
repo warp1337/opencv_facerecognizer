@@ -1,4 +1,4 @@
-![ocvf example output](doc/images/ocvf_example.jpg)
+![ocvf example output](doc/images/ocvf_example_florian.jpg) ![ocvf example output](doc/images/ocvf_example_norman.png)
 
 OpenCV FaceRecognizer
 =======================
