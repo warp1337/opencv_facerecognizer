@@ -283,3 +283,12 @@ LICENSE
     LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
     ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
     POSSIBILITY OF SUCH DAMAGE.
+
+
+AFFILIATION
+------------
+
+This work is supported by CoR-Lab and CITEC
+
+Florian Lier is currently with: [CITEC](http://www.cit-ec.de)
+Norman Koester is currently with: [CITEC](http://www.cit-ec.de) and [CoR-Lab](http://www.cor-lab.de)
