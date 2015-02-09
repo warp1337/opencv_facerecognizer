@@ -1,4 +1,4 @@
-![ocvf example output](doc/images/ocvf_example_florian.jpg = 320x240) ![ocvf example output](doc/images/ocvf_example_norman.png = 320x240)
+![ocvf example output](doc/images/ocvf_example_florian.jpg) ![ocvf example output](doc/images/ocvf_example_norman.png)
 
 OpenCV FaceRecognizer
 =======================
