@@ -82,7 +82,7 @@ Installing OCVF Package (sudo)
     sudo python setup.py install
 
 
-Installing Package OCVF in a Custom Prefix (non-sudo)
+Installing Package OCVF (non-sudo)
 ------------------------------------------------------
     
     mkdir -p ~/custom-prefix/lib/python2.7/site-packages/
