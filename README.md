@@ -30,7 +30,6 @@ please consult [4][5].
 * [4] http://bytefish.de/blog/videofacerec/
 * [5] http://www.bytefish.de/blog/fisherfaces/
 
-[TOC]
 
 Architecture Overview
 ----------------------
