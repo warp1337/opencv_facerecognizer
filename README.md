@@ -107,7 +107,7 @@ The recognizer should detect **"linus"**
 
      
 Jump Start ROS + ROSBAG
--------------------------------------
+------------------------
 
 We have pre-recorded a set of images. You can replay this set and watch the recognizer do its work... 
 
