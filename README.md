@@ -2,7 +2,7 @@ OpenCV FaceRecognizer
 =======================
 
 First things first: this software package is based on the great work of Philipp Wagner [1]. However,
-Norman Koester and I (Florian Lier) created this package in order to provide a distributed and dynamic
+Norman Koester and me (Florian Lier) created this package in order to provide a distributed and dynamic
 learning approach to OpenCV based face recognition (and detection) using current robotics middleware
 implementations and standardized installation and roll-out routines. At the time of writing
 RSB [2] and ROS [3] are supported.
