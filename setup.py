@@ -62,14 +62,14 @@ setup(
         'Operating System :: MacOS',
     ],
     include_package_data=True,
-    packages=['ocvfacerec', 'ocvfacerec/facedet', 'ocvfacerec/facerec', 'ocvfacerec/helper', 'ocvfacerec/trainer',
-              'ocvfacerec/mwconnector'],
-    scripts=["bin/ocvf_recognizer.py", "bin/ocvf_recognizer_ros.py", "bin/ocvf_recognizer_rsb.py",
-             "bin/ocvf_interactive_trainer.py", "bin/ocvf_retrain_rsb.py", "bin/ocvf_retrain_ros.py"],
+    packages=['src/ocvfacerec', 'src/ocvfacerec/facedet', 'src/ocvfacerec/facerec', 'src/ocvfacerec/helper',
+              'src/ocvfacerec/trainer', 'src/ocvfacerec/mwconnector'],
+    scripts=["src/bin/ocvf_recognizer.py", "src/bin/ocvf_recognizer_ros.py", "src/bin/ocvf_recognizer_rsb.py",
+             "src/bin/ocvf_interactive_trainer.py", "src/bin/ocvf_retrain_rsb.py", "src/bin/ocvf_retrain_ros.py"],
     # Due to heavy dependencies (liblas, ATLAS, etc..) it is easier to install 'SciPy >= 0.14.0'
     # and PIL >= 1.1.7 using your Package Manager, i.e., sudo apt-get install python-scipy python-imaging-*
     install_requires=['NumPy >=1.8.1', 'matplotlib >= 1.2.0']
 )
 
 if _platform == "linux" or _platform == "linux2":
-    copy_tree('../data', "~/ocvf_data/")
+    copy_tree('data', "~/ocvf_data/")
