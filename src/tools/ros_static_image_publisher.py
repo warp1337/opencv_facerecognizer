@@ -37,6 +37,7 @@
 import os
 import cv2
 import sys
+import time
 import glob
 from Queue import Queue
 
@@ -50,6 +51,7 @@ class StaticImageSender():
     def __init__(self):
         self.image_q = None
         self.bridge = CvBridge()
+	self.images = []
 
     def glob_images(self, image_path):
         img_list = glob.glob(image_path)
@@ -60,15 +62,20 @@ class StaticImageSender():
         for img in img_list:
             img = cv2.imread(img, 1)
             self.image_q.put(img)
+	    self.images.append(img)
 
     def sender(self):
-        pub = rospy.Publisher('ocvfacerec/static_image', Image, queue_size=1)
-        rospy.init_node('ocvf_static_image_sender', anonymous=True)
-        rate = rospy.Rate(0.25)
-        while not self.image_q.empty():
-            pub.publish(self.bridge.cv2_to_imgmsg(self.image_q.get(False), "bgr8"))
-            rate.sleep()
-
+        pub = rospy.Publisher('ocvfacerec/static_image', Image, queue_size=4)
+        rospy.init_node('ocvf_static_image_sender', anonymous=False)
+	c = 0
+	rate = rospy.Rate(0.5) # Every Two Seconds
+    	while not rospy.is_shutdown():
+                pub.publish(self.bridge.cv2_to_imgmsg(self.images[c], "bgr8"))
+                time.sleep(2)
+		print ">> Image " + str(c)
+		c += 1
+		if c > 3:
+			c = 0
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
