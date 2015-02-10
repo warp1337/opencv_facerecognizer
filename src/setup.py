@@ -65,7 +65,7 @@ setup(
               'ocvfacerec/mwconnector'],
     scripts=["bin/ocvf_recognizer.py", "bin/ocvf_recognizer_ros.py", "bin/ocvf_recognizer_rsb.py",
              "bin/ocvf_interactive_trainer.py", "bin/ocvf_retrain_rsb.py", "bin/ocvf_retrain_ros.py"],
-    data_files=[('/etc/ocvf/data', ['data/haarcascade_frontalface_alt2.xml', 'data/individuals.bag', 'data/individuals.pkl'],
+    data_files=[('etc/ocvf/data', ['data/haarcascade_frontalface_alt2.xml', 'data/individuals.bag', 'data/individuals.pkl'],
                  'data/individuals/*')],
     # Due to heavy dependencies (liblas, ATLAS, etc..) it is easier to install 'SciPy >= 0.14.0'
     # and PIL >= 1.1.7 using your Package Manager, i.e., sudo apt-get install python-scipy python-imaging-*
