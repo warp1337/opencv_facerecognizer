@@ -78,7 +78,6 @@ Installing OCVF Package (sudo)
 
     mkdir -p ~/ocvfacerecognizer && cd ~/ocvfacerecognizer
     git clone https://github.com/warp1337/opencv_facerecognizer.git .
-    cd src
     sudo python setup.py install
 
 
@@ -88,7 +87,6 @@ Installing OCVF Package (non-sudo)
     mkdir -p ~/custom-prefix/lib/python2.7/site-packages/
     mkdir -p ~/ocvfacerecognizer && cd ~/ocvfacerecognizer
     git clone https://github.com/warp1337/opencv_facerecognizer.git .
-    cd src
     export PYTHONPATH=~/custom-prefix/lib/python2.7/site-packages:$PYTHONPATH
     python setup.py install --prefix=~/custom-prefix/
 
