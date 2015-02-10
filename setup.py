@@ -29,6 +29,7 @@
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+import os
 from distutils.dir_util import copy_tree
 from sys import platform as _platform
 from setuptools import setup
@@ -72,4 +73,5 @@ setup(
 )
 
 if _platform == "linux" or _platform == "linux2":
-    copy_tree('data', "~/ocvf_data/")
+    home = os.getenv("HOME")
+    copy_tree('data', str(home) + "/ocvf_data/")
