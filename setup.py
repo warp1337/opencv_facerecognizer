@@ -62,7 +62,6 @@ setup(
         'Operating System :: Unix',
         'Operating System :: MacOS',
     ],
-    include_package_data=True,
     packages=['src/ocvfacerec', 'src/ocvfacerec/facedet', 'src/ocvfacerec/facerec', 'src/ocvfacerec/helper',
               'src/ocvfacerec/trainer', 'src/ocvfacerec/mwconnector'],
     scripts=["src/bin/ocvf_recognizer.py", "src/bin/ocvf_recognizer_ros.py", "src/bin/ocvf_recognizer_rsb.py",
