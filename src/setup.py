@@ -73,6 +73,5 @@ setup(
 )
 
 if _platform == "linux" or _platform == "linux2":
-    # print sys.argv[1]
     home = os.getenv("HOME")
     copy_tree('../data', str(home) + "/ocvf_data/")
