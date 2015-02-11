@@ -42,9 +42,8 @@ import sys
 import time
 
 import rsb
-from rst.classification.ClassificationResult_pb2 import ClassificationResult
 from rstconverters.opencv import IplimageConverter
-from rstsandbox.classification.ClassificationResults_pb2 import ClassificationResults
+from rstsandbox.vision.HeadObjects_pb2 import HeadObjects
 
 import numpy as np
 from ocvfacerec.facedet.detector import CascadedDetector
@@ -60,7 +59,7 @@ from rst.geometry.PointCloud2DInt_pb2 import PointCloud2DInt
 # RSB Specifics
 class Recognizer(object):
     def __init__(self, model, camera_id, cascade_filename, run_local, inscope="/rsbopencv/ipl",
-                 outscope="/rsbopencv/persons", wait=50, notification="/ocvfacerec/rsb/restart/"):
+                 outscope="/ocvfacerec/rsb/people", wait=50, notification="/ocvfacerec/rsb/restart/"):
         self.model = model
         self.wait = wait
         self.notification_scope = notification
@@ -74,7 +73,7 @@ class Recognizer(object):
         self.restart = False
 
         def signal_handler(signal, frame):
-            print ">> RSB Exiting"
+            print "\n>> RSB Exiting"
             self.doRun = False
 
         signal.signal(signal.SIGINT, signal_handler)
@@ -94,13 +93,13 @@ class Recognizer(object):
         self.last_restart_request = Queue(1)
 
         try:
-            rsb.converter.registerGlobalConverter(rsb.converter.ProtocolBufferConverter(messageClass=ClassificationResults))
+            rsb.converter.registerGlobalConverter(rsb.converter.ProtocolBufferConverter(messageClass=HeadObjects))
         except Exception, e:
             # If they are already loaded, the lib throws an exception ...
             # print ">> [Error] While loading RST converter: ", e
             pass
 
-        self.person_publisher = rsb.createInformer(outscope, dataType=ClassificationResults)
+        self.person_publisher = rsb.createInformer(outscope, dataType=HeadObjects)
 
         # This must be set at last!
         rsb.setDefaultParticipantConfig(rsb.ParticipantConfig.fromDefaultSources())
@@ -120,24 +119,10 @@ class Recognizer(object):
         self.last_restart_request.put(restart_event.data, False)
 
     def publish_persons(self, persons, cause_uuid):
-        rsb_person_list = ClassificationResults()
+        # Gather the information of every head
+        rsb_person_list = HeadObjects()
         for a_person in persons:
-
-            # The datatype can hold multiple classes of a single classification
-            new_classgroup = rsb_person_list.classes.add()
-            new_classgroup.decided_class = "0"
-            # TODO: add more abstraction to encapsulate the middleware 
-            #a_rsb_person = a_person.to_rsb_msg()
-
-            # We will just remember the most dominant one: Single class 
-            # representing a person
-            a_class = new_classgroup.classes.add()
-            a_class.name = a_person.name
-            a_class.confidence = a_person.reliability
-
-            # A ClassificationResult does not allow positions - mmhh..
-            # TODO: well fix this somehow -.-
-            # a_class.position = a_person.position
+            rsb_person_list.head_objects.extend([a_person.to_rsb_msg()])
 
         # Create the event and add the cause. Maybe some day someone will use
         # this reference to the cause :)
@@ -155,14 +140,14 @@ class Recognizer(object):
         self.listener.addHandler(self.add_last_image)
         self.restart_listener.addHandler(self.add_restart_request)
         # TODO # TODO Implement Result Informer (ClassificationResult)
-        informer = rsb.createInformer("/ocvfacerec/rsb/people", dataType=ClassificationResult)
         while self.doRun:
             # GetLastImage is blocking so we won't get a "None" Image
             image, cause_uuid = self.lastImage.get(True)
             # This should not be resized with a fixed rate, this should be rather configured by the sender
             # i.e. by sending smaller images. Don't fiddle with input data in two places.
             # img = cv2.resize(image, (image.shape[1] / 2, image.shape[0] / 2), interpolation=cv2.INTER_CUBIC)
-            img = cv2.resize(image, (320, 240), interpolation=cv2.INTER_CUBIC)
+            image_size = (320, 240)
+            img = cv2.resize(image, image_size, interpolation=cv2.INTER_CUBIC)
             imgout = img.copy()
 
             persons = []
@@ -184,7 +169,7 @@ class Recognizer(object):
                 name = str(self.model.subject_names[predicted_label])
 
                 # Create a PersonWrapper
-                a_person = PersonWrapper(r, name, distance)
+                a_person = PersonWrapper(r, name, distance, image_size)
                 persons.append(a_person)
 
                 # Draw the face area in image:
@@ -234,7 +219,7 @@ if __name__ == '__main__':
                       help="Sets the path to the Haar Cascade used for the face detection part [haarcascade_frontalface_alt2.xml].")
     parser.add_option("-s", "--rsb-source", action="store", dest="rsb_source", default="/rsbopencv/ipl",
                       help="Grab video from RSB Middleware (default: %default)")
-    parser.add_option("-d", "--rsb-destination", action="store", dest="rsb_destination", default="/rsbopencv/persons",
+    parser.add_option("-d", "--rsb-destination", action="store", dest="rsb_destination", default="/ocvfacerec/rsb/people",
                       help="Target RSB scope to which persons are published (default: %default).")
     parser.add_option("-n", "--restart-notification", action="store", dest="restart_notification",
                       default="/ocvfacerec/restart",
