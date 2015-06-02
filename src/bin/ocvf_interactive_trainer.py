@@ -239,8 +239,8 @@ if __name__ == '__main__':
     (options, args) = parser.parse_args()
 
     try:
-        mkdir_p(os.path.basename(options.model_path))
-        mkdir_p(options.training_data_path)
+        mkdir_p(os.path.dirname(os.path.abspath(options.model_path)))
+        mkdir_p(os.path.dirname(os.path.abspath(options.training_data_path)))
     except Exception as e:
         print ">> Error: ", e
         sys.exit(1)
