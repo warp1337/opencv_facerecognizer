@@ -48,6 +48,7 @@ from ocvfacerec.trainer.thetrainer import TheTrainer
 
 
 class Trainer(object):
+
     def __init__(self, _options, _middelware_connector):
         self.counter = 0
         self.middleware = _middelware_connector
@@ -240,8 +241,8 @@ if __name__ == '__main__':
     try:
         mkdir_p(os.path.basename(options.model_path))
         mkdir_p(options.training_data_path)
-    except Exception, e:
-        print ">> Error: " + e
+    except Exception as e:
+        print ">> Error: ", e
         sys.exit(1)
 
     if options.middleware_type == "rsb":
