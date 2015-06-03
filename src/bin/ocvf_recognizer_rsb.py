@@ -182,6 +182,10 @@ class Recognizer(object):
 
             if self.show_gui:
                 cv2.imshow('OCVFACEREC < RSB STREAM', imgout)
+                cv2.waitKey(self.wait)
+            else:
+                # Sleep for the desired time, less CPU
+                time.sleep(self.wait * 0.01)
 
             if len(persons) > 0:
                 # Publish the result
@@ -195,9 +199,6 @@ class Recognizer(object):
                     self.doRun = False
             except Exception, e:
                 pass
-
-            # Sleep for the desired time, less CPU
-            time.sleep(self.wait * 0.01)
 
         print ">> Deactivating RSB Listener"
         self.listener.deactivate()
