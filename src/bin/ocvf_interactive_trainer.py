@@ -178,7 +178,10 @@ class Trainer(object):
             return False
         else:
             person_image_path = os.path.join(self.training_data_path, train_name)
-            shutil.rmtree(person_image_path)
+            try:
+                shutil.rmtree(person_image_path)
+            except Exception as e:
+                pass
             mkdir_p(person_image_path)
             for filename in glob.glob(os.path.join(tmp_person_image_path, '*.*')):
                 shutil.copy(filename, person_image_path)
