@@ -58,11 +58,14 @@ from rst.geometry.PointCloud2DInt_pb2 import PointCloud2DInt
 # OCVF Imports
 # RSB Specifics
 class Recognizer(object):
+
     def __init__(self, model, camera_id, cascade_filename, run_local, inscope="/rsbopencv/ipl",
-                 outscope="/ocvfacerec/rsb/people", wait=50, notification="/ocvfacerec/rsb/restart/"):
+                 outscope="/ocvfacerec/rsb/people", wait=50, notification="/ocvfacerec/rsb/restart/",
+                 show_gui=False):
         self.model = model
         self.wait = wait
         self.notification_scope = notification
+        self.show_gui = show_gui
         self.detector = CascadedDetector(cascade_fn=cascade_filename, minNeighbors=5, scaleFactor=1.1)
 
         if run_local:
@@ -127,13 +130,12 @@ class Recognizer(object):
         # Create the event and add the cause. Maybe some day someone will use
         # this reference to the cause :)
         event = rsb.Event(scope=self.person_publisher.getScope(),
-                      data=rsb_person_list,
-                      type=type(rsb_person_list),
-                      causes=[cause_uuid])
+                          data=rsb_person_list,
+                          type=type(rsb_person_list),
+                          causes=[cause_uuid])
 
         # Publish the data
         self.person_publisher.publishEvent(event)
-
 
     def run_distributed(self):
         print ">> Activating RSB Listener"
@@ -178,13 +180,15 @@ class Recognizer(object):
                 draw_str(imgout, (x0 - 20, y0 - 40), "Label " + a_person.name)
                 draw_str(imgout, (x0 - 20, y0 - 20), "Feature Distance " + "%1.1f" % a_person.reliability)
 
-            cv2.imshow('OCVFACEREC < RSB STREAM', imgout)
+            if self.show_gui:
+                cv2.imshow('OCVFACEREC < RSB STREAM', imgout)
 
             if len(persons) > 0:
                 # Publish the result
                 self.publish_persons(persons, cause_uuid)
 
-            cv2.waitKey(self.wait)
+            # Sleep for the desired time, less CPU
+            time.sleep(self.wait * 0.01)
 
             # Check if external restart requested
             try:
@@ -226,6 +230,8 @@ if __name__ == '__main__':
                       help="Target Topic where a simple restart message is received (default: %default).")
     parser.add_option("-w", "--wait", action="store", dest="wait_time", default=20, type="int",
                       help="Amount of time (in ms) to sleep between face identification frames (default: %default).")
+    parser.add_option("-g", "--no-gui", dest="show_gui", action='store_false', default=True,
+                      help="Hides the GUI elements for headless mode (default: show gui).")
     (options, args) = parser.parse_args()
     print "\n"
     # Check if a model name was passed:
@@ -243,7 +249,7 @@ if __name__ == '__main__':
         print ">> [Error] No Cascade File found at '%s'." % options.cascade_filename
         sys.exit(1)
     # We are resizing the images to a fixed size, as this is neccessary for some of
-    # the algorithms, some algorithms like LBPH don't have this requirement. To 
+    # the algorithms, some algorithms like LBPH don't have this requirement. To
     # prevent problems from popping up, we resize them with a default value if none
     # was given:
     try:
@@ -265,12 +271,13 @@ if __name__ == '__main__':
     print ">> Publishing regognised people to --> " + str(options.rsb_destination)
     print ">> Restart Recognizer Scope <-- " + str(options.restart_notification)
     x = Recognizer(model=model, camera_id=None, cascade_filename=options.cascade_filename, run_local=False,
-                   inscope=options.rsb_source, outscope=str(options.rsb_destination), wait=options.wait_time, notification=options.restart_notification)
+                   inscope=options.rsb_source, outscope=str(options.rsb_destination), wait=options.wait_time,
+                   notification=options.restart_notification, show_gui=options.show_gui)
     x.run_distributed()
     while x.restart:
         time.sleep(1)
         model = load_model(model_filename)
         x = Recognizer(model=model, camera_id=None, cascade_filename=options.cascade_filename, run_local=False,
-                       inscope=options.rsb_source, outscope=str(options.rsb_destination), wait=options.wait_time, notification=options.restart_notification)
+                       inscope=options.rsb_source, outscope=str(options.rsb_destination), wait=options.wait_time,
+                       notification=options.restart_notification, show_gui=options.show_gui)
         x.run_distributed()
-
