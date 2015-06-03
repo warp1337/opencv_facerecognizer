@@ -41,6 +41,9 @@ import Image
 import signal
 import optparse
 import traceback
+import shutil
+import glob
+import time
 
 # OCVF Imports
 from ocvfacerec.helper.common import *
@@ -48,6 +51,8 @@ from ocvfacerec.trainer.thetrainer import TheTrainer
 
 
 class Trainer(object):
+
+    tmp_storage = "/tmp/ocvf_retraining"
 
     def __init__(self, _options, _middelware_connector):
         self.counter = 0
@@ -132,9 +137,9 @@ class Trainer(object):
 
     def record_images(self, train_name):
         print ">> Recording %d Images From %s..." % (self.training_image_number, self.image_source)
-        person_image_path = os.path.join(self.training_data_path, train_name)
+        tmp_person_image_path = os.path.join(self.tmp_storage, train_name)
         cascade = cv.Load(self.cascade_filename)
-        mkdir_p(person_image_path)
+        mkdir_p(tmp_person_image_path)
         num_mugshots = 0
         abort_threshold = 80
         abort_count = 0
@@ -156,7 +161,7 @@ class Trainer(object):
                 if cropped_image.size[0] >= self.mugshot_size and cropped_image.size[1] >= self.mugshot_size:
                     sys.stdout.write("+")
                     sys.stdout.flush()
-                    cropped_image.save(os.path.join(person_image_path, "%03d.jpg" % num_mugshots))
+                    cropped_image.save(os.path.join(tmp_person_image_path, "%03d.jpg" % num_mugshots))
                     num_mugshots += 1
                     ok_shot = True
 
@@ -165,10 +170,18 @@ class Trainer(object):
                 sys.stdout.write("-")
                 sys.stdout.flush()
 
+            # Sleep between mug shots
+            time.sleep(0.01 * 20)
+
         print ""
         if abort_count >= abort_threshold:
             return False
         else:
+            person_image_path = os.path.join(self.training_data_path, train_name)
+            shutil.rmtree(person_image_path)
+            mkdir_p(person_image_path)
+            for filename in glob.glob(os.path.join(tmp_person_image_path, '*.*')):
+                shutil.copy(filename, person_image_path)
             return True
 
     def re_train(self):

@@ -187,9 +187,6 @@ class Recognizer(object):
                 # Publish the result
                 self.publish_persons(persons, cause_uuid)
 
-            # Sleep for the desired time, less CPU
-            time.sleep(self.wait * 0.01)
-
             # Check if external restart requested
             try:
                 z = self.last_restart_request.get(False)
@@ -198,6 +195,9 @@ class Recognizer(object):
                     self.doRun = False
             except Exception, e:
                 pass
+
+            # Sleep for the desired time, less CPU
+            time.sleep(self.wait * 0.01)
 
         print ">> Deactivating RSB Listener"
         self.listener.deactivate()
@@ -264,6 +264,7 @@ if __name__ == '__main__':
 
     print ">> Loading model <-- " + str(model_filename)
     model = load_model(model_filename)
+    print ">> Known Persons --> ", ", ".join(model.subject_names.values())
     if not isinstance(model, ExtendedPredictableModel):
         print ">> [Error] The given model is not of type '%s'." % "ExtendedPredictableModel"
         sys.exit(1)
@@ -277,6 +278,7 @@ if __name__ == '__main__':
     while x.restart:
         time.sleep(1)
         model = load_model(model_filename)
+        print ">> Known Persons --> ", ", ".join(model.subject_names.values())
         x = Recognizer(model=model, camera_id=None, cascade_filename=options.cascade_filename, run_local=False,
                        inscope=options.rsb_source, outscope=str(options.rsb_destination), wait=options.wait_time,
                        notification=options.restart_notification, show_gui=options.show_gui)

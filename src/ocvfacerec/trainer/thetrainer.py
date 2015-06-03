@@ -49,10 +49,12 @@ from ocvfacerec.facerec.serialization import save_model
 
 
 class ExtendedPredictableModel(PredictableModel):
+
     """ Subclasses the PredictableModel to store some more
         information, so we don't need to pass the dataset
         on each program call...
     """
+
     def __init__(self, feature, classifier, image_size, subject_names):
         PredictableModel.__init__(self, feature=feature, classifier=classifier)
         self.image_size = image_size
@@ -88,22 +90,24 @@ class TheTrainer():
         folder_names = []
         for dirname, dirnames, filenames in os.walk(path):
             for subdirname in dirnames:
-                folder_names.append(subdirname)
-                subject_path = os.path.join(dirname, subdirname)
-                for filename in os.listdir(subject_path):
-                    try:
-                        im = cv2.imread(os.path.join(subject_path, filename), cv2.IMREAD_GRAYSCALE)
-                        # Resize to given size (if given)
-                        if image_size is not None:
-                            im = cv2.resize(im, image_size)
-                        X.append(np.asarray(im, dtype=np.uint8))
-                        y.append(c)
-                    except IOError, (errno, strerror):
-                        print ">> I/O error({0}): {1}".format(errno, strerror)
-                    except:
-                        print ">> Unexpected error:", sys.exc_info()[0]
-                        raise
-                c = c + 1
+                # only if there are images in the folder
+                if os.listdir(os.path.join(dirname, subdirname)):
+                    folder_names.append(subdirname)
+                    subject_path = os.path.join(dirname, subdirname)
+                    for filename in os.listdir(subject_path):
+                        try:
+                            im = cv2.imread(os.path.join(subject_path, filename), cv2.IMREAD_GRAYSCALE)
+                            # Resize to given size (if given)
+                            if image_size is not None:
+                                im = cv2.resize(im, image_size)
+                            X.append(np.asarray(im, dtype=np.uint8))
+                            y.append(c)
+                        except IOError, (errno, strerror):
+                            print ">> I/O error({0}): {1}".format(errno, strerror)
+                        except:
+                            print ">> Unexpected error:", sys.exc_info()[0]
+                            raise
+                    c = c + 1
         return [X, y, folder_names]
 
     @staticmethod
