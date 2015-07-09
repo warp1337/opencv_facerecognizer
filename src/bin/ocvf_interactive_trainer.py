@@ -103,7 +103,6 @@ class Trainer(object):
         self.re_train()
 
         print ">> Ready!"
-        print "LOL"
 
         while self.doRun:
             try:

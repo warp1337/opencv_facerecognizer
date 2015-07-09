@@ -121,8 +121,6 @@ class RSBConnector(MiddlewareConnector):
                new_task.origin is TaskState_pb2.TaskState.SUBMITTER:
                 is_new_task = True
 
-        print "got task remnain:", new_task
-
         # update task description
         new_task.origin = TaskState_pb2.TaskState.HANDLER
         new_task.state = TaskState_pb2.TaskState.ACCEPTED
