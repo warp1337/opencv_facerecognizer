@@ -103,6 +103,7 @@ class Trainer(object):
         self.re_train()
 
         print ">> Ready!"
+        print "LOL"
 
         while self.doRun:
             try:
@@ -140,16 +141,21 @@ class Trainer(object):
         tmp_person_image_path = os.path.join(self.tmp_storage, train_name)
         cascade = cv.Load(self.cascade_filename)
         mkdir_p(tmp_person_image_path)
-        num_mugshots = 0
-        abort_threshold = 80
-        abort_count = 0
+        num_mugshots = 0.0
+        abort_threshold = 80.0
+        abort_count = 0.0
         switch = False
         while num_mugshots < self.training_image_number and not self.abort_training and abort_count < abort_threshold:
 
             # Take every second frame to add some more variance
             switch = not switch
             if switch:
-                input_image = self.middleware.get_image()
+                try:
+                    input_image = self.middleware.get_image()
+                except Exception, e:
+                    self.middleware.fail_last_task_status(reason="Unable to Collect Images!")
+                    return False
+
             else:
                 continue
 
@@ -162,19 +168,21 @@ class Trainer(object):
                     sys.stdout.write("+")
                     sys.stdout.flush()
                     cropped_image.save(os.path.join(tmp_person_image_path, "%03d.jpg" % num_mugshots))
-                    num_mugshots += 1
+                    num_mugshots += 1.0
                     ok_shot = True
 
             if ok_shot is False:
-                abort_count += 1
+                abort_count += 1.0
                 sys.stdout.write("-")
                 sys.stdout.flush()
 
-            # Sleep between mug shots
-            time.sleep(0.01 * 20)
+            self.middleware.update_last_task_status(int((num_mugshots / self.training_image_number) * 100))
+            # Sleep 20 ms between mug shots
+            time.sleep(0.2)
 
         print ""
         if abort_count >= abort_threshold:
+            self.middleware.fail_last_task_status(reason="Unable to gather enough good mugshots")
             return False
         else:
             person_image_path = os.path.join(self.training_data_path, train_name)
@@ -185,6 +193,7 @@ class Trainer(object):
             mkdir_p(person_image_path)
             for filename in glob.glob(os.path.join(tmp_person_image_path, '*.*')):
                 shutil.copy(filename, person_image_path)
+            self.middleware.complete_last_task_status()
             return True
 
     def re_train(self):
