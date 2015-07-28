@@ -35,6 +35,7 @@
 # STD Imports
 import numpy as np
 from Queue import Queue
+import copy
 
 # RSB Specifics
 import rsb
@@ -54,8 +55,8 @@ from rst.communicationpatterns.TaskState_pb2 import TaskState
 
 class RSBConnector(MiddlewareConnector):
 
-    def __init__(self):
-        pass
+    def __init__(self, socket_mode=False):
+        self.socket_mode = socket_mode
 
     def add_last_image(self, image_event):
         try:
@@ -71,13 +72,37 @@ class RSBConnector(MiddlewareConnector):
             pass
         self.last_train.put(retrain_event.data, False)
 
+    def get_modified_participantconfig(self):
+
+        # get current config as a copy
+        config = copy.deepcopy(rsb.getDefaultParticipantConfig())
+        transports = config.getTransports(includeDisabled=True)
+
+        # modify it
+        for aTransport in transports:
+            # is this the transport we're looking for?
+            if aTransport.name is "socket":
+                #modify desired transport here ...
+                aTransport.enabled = True
+            else:
+                aTransport.enabled = False
+
+        # all done
+        return config
+
     def activate(self, image_source, retrain_source, restart_target):
         # In order to convert the images
         registerGlobalConverter(IplimageConverter())
         rsb.setDefaultParticipantConfig(rsb.ParticipantConfig.fromDefaultSources())
 
         # Listen to Image Events
-        self.image_listener = rsb.createListener(image_source)
+        if self.socket_mode:
+            print ">> WARN: receiving images from SOCKET!"
+            self.image_listener = rsb.createListener(image_source, config=self.get_modified_participantconfig())
+        else:
+            self.image_listener = rsb.createListener(image_source)
+
+
         self.lastImage = Queue(1)
         self.image_listener.addHandler(self.add_last_image)
 

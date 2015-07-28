@@ -66,6 +66,8 @@ class Trainer(object):
         self.training_data_path = _options.training_data_path
         self.training_image_number = _options.training_image_number
         self.cascade_filename = _options.cascade_filename
+        self.socket_mode = _options.socket_mode
+        self.pause_duration = _options.pause_duration
         try:
             self.image_size = (int(_options.image_size.split("x")[0]), int(_options.image_size.split("x")[1]))
         except Exception, e:
@@ -143,20 +145,14 @@ class Trainer(object):
         num_mugshots = 0.0
         abort_threshold = 80.0
         abort_count = 0.0
-        switch = False
         while num_mugshots < self.training_image_number and not self.abort_training and abort_count < abort_threshold:
 
-            # Take every second frame to add some more variance
-            switch = not switch
-            if switch:
-                try:
-                    input_image = self.middleware.get_image()
-                except Exception, e:
-                    self.middleware.fail_last_task_status(reason="Unable to Collect Images!")
-                    return False
-
-            else:
-                continue
+            try:
+                input_image = self.middleware.get_image()
+                start_time = time.time()
+            except Exception, e:
+                self.middleware.fail_last_task_status(reason="Unable to Collect Images!")
+                return False
 
             im = Image.fromarray(cv2.cvtColor(input_image, cv2.COLOR_BGR2RGB))
             cropped_image = face_crop_single_image(im, cascade)
@@ -176,8 +172,12 @@ class Trainer(object):
                 sys.stdout.flush()
 
             self.middleware.update_last_task_status(int((num_mugshots / self.training_image_number) * 100))
-            # Sleep 20 ms between mug shots
-            time.sleep(0.2)
+
+            # Sleep X ms between mug shots
+            time_passed = (time.time()-start_time)
+            if time_passed < self.pause_duration:
+                time.sleep(self.pause_duration-time_passed)
+
 
         print ""
         if abort_count >= abort_threshold:
@@ -232,6 +232,9 @@ if __name__ == '__main__':
     group_mw.add_option("-s", "--image-source", action="store",
                         dest="image_source", default="/rsbopencv/ipl",
                         help="Source Topic [RSB] or Scope [ROS] of video images (default: %default).")
+    group_mw.add_option("-x", "--socket-mode", action="store_true",
+                        dest="socket_mode", default=False,
+                        help="Let RSB use the socket connection for images receiving (default: %default).")
     group_mw.add_option("-e", "--re-train-source", action="store",
                         dest="retrain_source", default="/ocvfacerec/trainer/retrainperson",
                         help="Source (topic/scope) from which to get a re-train message (String, name of the person) (default: %default).")
@@ -248,6 +251,10 @@ if __name__ == '__main__':
     group_algorithm.add_option("-n", "--training-images", action="store",
                                dest="training_image_number", type="int", default=70,
                                help="Number of images to use for training of a new person(default: %default).")
+    group_algorithm.add_option("-d", "--pause_duration", action="store",
+                               dest="pause_duration", type="float", default=0.2,
+                               help="Sleep time (seconds) between individual images used for training of a new person(default: %default).")
+
     group_algorithm.add_option("-r", "--resize", action="store", type="string", dest="image_size", default="70x70",
                                help="Resizes the given and new dataset(s) to a given size in format [width]x[height] (default: %default).")
     group_algorithm.add_option("-v", "--validate", action="store", dest="numfolds", type="int", default=None,
@@ -271,8 +278,7 @@ if __name__ == '__main__':
 
     if options.middleware_type == "rsb":
         from ocvfacerec.mwconnector.rsbconnector import RSBConnector
-
-        Trainer(options, RSBConnector()).run()
+        Trainer(options, RSBConnector(socket_mode=options.socket_mode)).run()
     elif options.middleware_type == "ros":
         from ocvfacerec.mwconnector.rosconnector import ROSConnector
 
