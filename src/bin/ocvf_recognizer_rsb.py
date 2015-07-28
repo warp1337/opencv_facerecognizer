@@ -40,6 +40,7 @@ import os
 import signal
 import sys
 import time
+import copy
 
 import rsb
 from rstconverters.opencv import IplimageConverter
@@ -61,12 +62,13 @@ class Recognizer(object):
 
     def __init__(self, model, camera_id, cascade_filename, run_local, inscope="/rsbopencv/ipl",
                  outscope="/ocvfacerec/rsb/people", wait=50, notification="/ocvfacerec/rsb/restart/",
-                 show_gui=False):
+                 show_gui=False, socket_mode=False):
         self.model = model
         self.wait = wait
         self.notification_scope = notification
         self.show_gui = show_gui
         self.detector = CascadedDetector(cascade_fn=cascade_filename, minNeighbors=5, scaleFactor=1.1)
+        self.socket_mode = socket_mode
 
         if run_local:
             print ">> Error Run local selected in RSB based Recognizer"
@@ -89,7 +91,15 @@ class Recognizer(object):
             # print ">> [Error] While loading RST converter: ", e
             pass
 
-        self.listener = rsb.createListener(inscope)
+        # Listen to Image Events
+        if self.socket_mode:
+            print ">> WARN: receiving images from SOCKET!"
+            self.listener = rsb.createListener(inscope, config=self.get_modified_participantconfig())
+        else:
+            self.listener = rsb.createListener(inscope)
+
+
+
         self.lastImage = Queue(1)
 
         self.restart_listener = rsb.createListener(self.notification_scope)
@@ -106,6 +116,24 @@ class Recognizer(object):
 
         # This must be set at last!
         rsb.setDefaultParticipantConfig(rsb.ParticipantConfig.fromDefaultSources())
+
+    def get_modified_participantconfig(self):
+
+        # get current config as a copy
+        config = copy.deepcopy(rsb.getDefaultParticipantConfig())
+        transports = config.getTransports(includeDisabled=True)
+
+        # modify it
+        for aTransport in transports:
+            # is this the transport we're looking for?
+            if aTransport.name is "socket":
+                #modify desired transport here ...
+                aTransport.enabled = True
+            else:
+                aTransport.enabled = False
+
+        # all done
+        return config
 
     def add_last_image(self, image_event):
         try:
@@ -224,6 +252,9 @@ if __name__ == '__main__':
                       help="Sets the path to the Haar Cascade used for the face detection part [haarcascade_frontalface_alt2.xml].")
     parser.add_option("-s", "--rsb-source", action="store", dest="rsb_source", default="/rsbopencv/ipl",
                       help="Grab video from RSB Middleware (default: %default)")
+    parser.add_option("-x", "--socket-mode", action="store_true",
+                        dest="socket_mode", default=False,
+                        help="Let RSB use the socket connection for images receiving (default: %default).")
     parser.add_option("-d", "--rsb-destination", action="store", dest="rsb_destination", default="/ocvfacerec/rsb/people",
                       help="Target RSB scope to which persons are published (default: %default).")
     parser.add_option("-n", "--restart-notification", action="store", dest="restart_notification",
@@ -274,7 +305,7 @@ if __name__ == '__main__':
     print ">> Restart Recognizer Scope <-- " + str(options.restart_notification)
     x = Recognizer(model=model, camera_id=None, cascade_filename=options.cascade_filename, run_local=False,
                    inscope=options.rsb_source, outscope=str(options.rsb_destination), wait=options.wait_time,
-                   notification=options.restart_notification, show_gui=options.show_gui)
+                   notification=options.restart_notification, show_gui=options.show_gui,socket_mode=options.socket_mode)
     x.run_distributed()
     while x.restart:
         time.sleep(1)
@@ -282,5 +313,5 @@ if __name__ == '__main__':
         print ">> Known Persons --> ", ", ".join(model.subject_names.values())
         x = Recognizer(model=model, camera_id=None, cascade_filename=options.cascade_filename, run_local=False,
                        inscope=options.rsb_source, outscope=str(options.rsb_destination), wait=options.wait_time,
-                       notification=options.restart_notification, show_gui=options.show_gui)
+                       notification=options.restart_notification, show_gui=options.show_gui,socket_mode=options.socket_mode)
         x.run_distributed()
