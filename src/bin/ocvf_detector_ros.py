@@ -96,12 +96,14 @@ class Recognizer(object):
         except Exception, ex:
             print ex
             return
+        if cv_image is None:
+            return
         # Resize the frame to half the original size for speeding up the detection process.
         # In ROS we can control the size, so we are sending a 320*240 image by default.
-        # img = cv2.resize(cv_image, (320, 240))
+        img = cv2.resize(cv_image, (320, 240), interpolation=cv2.INTER_LINEAR)
         # img = cv2.resize(cv_image, (cv_image.shape[1] / 2, cv_image.shape[0] / 2), interpolation=cv2.INTER_CUBIC)
-        img = cv_image
-        # imgout = cv_image
+        # img = cv_image
+        imgout = img.copy()
         # Remember the Persons found in current image
         persons = []
         for _i, r in enumerate(self.detector.detect(img)):
@@ -110,7 +112,7 @@ class Recognizer(object):
             # face = img[y0:y1, x0:x1]
             # face = cv2.cvtColor(face, cv2.COLOR_BGR2GRAY)
             # Draw the face area in image:
-            cv2.rectangle(img, (x0, y0), (x1, y1), (0, 0, 255), 2)
+            cv2.rectangle(imgout, (x0, y0), (x1, y1), (0, 0, 255), 2)
             msg = Person()
             point = Point()
             # Send the center of the person's bounding box
@@ -135,15 +137,15 @@ class Recognizer(object):
             for p in persons:
                 msg.people.append(p)
             self.rp.publisher.publish(msg)
-        cv2.imshow('OCVFACEREC < ROS STREAM', img)
+        cv2.imshow('OCVFACEREC < ROS STREAM', imgout)
         cv2.waitKey(self.wait)
 
     def run_distributed(self, image_topic):
         print ">> Activating ROS Subscriber"
-        image_subscriber = rospy.Subscriber(image_topic, Image, self.image_callback, queue_size=1)
+        image_subscriber = rospy.Subscriber(image_topic, Image, self.image_callback, queue_size=5)
         # print ">> Recognizer is running"
         while self.doRun:
-            time.sleep(0.02)
+            time.sleep(1)
             pass
         # Important: You need to unregister before restarting!
         image_subscriber.unregister()
