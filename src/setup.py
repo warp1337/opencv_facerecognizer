@@ -73,16 +73,16 @@ setup(
     install_requires=['NumPy >=1.8.1', 'matplotlib >= 1.2.0'],
 )
 
-print "Now installing training and extra data"
+print "Now installing training and extra data..."
 
 if _platform == "linux" or _platform == "linux2":
-    if os.environ.get('prefix') is not None:
+    if os.getenv("prefix") is not None:
         prefix = os.getenv("prefix")
         copy_tree('../data', str(prefix) + "/etc/ocvf_data/")
         print "Copying training data to: %s" % str(prefix) + "/etc/ocvf_data/"
-    if os.path.isdir("../data"):
+    elif os.path.isdir("../data"):
         home = os.getenv("HOME")
         copy_tree('../data', str(home) + "/ocvf_data/")
         print "Copying training data to: %s" % str(home) + "/etc/ocvf_data/"
     else:
-        print "No raining data installed"
+        print "No training data installed"
