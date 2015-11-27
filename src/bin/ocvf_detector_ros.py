@@ -181,8 +181,12 @@ if __name__ == '__main__':
     parser = OptionParser(usage=usage)
     parser.add_option("-s", "--ros-source", action="store", dest="ros_source", help="Grab video from ROS Middleware (default: %default).",
                       default="/usb_cam/image_raw")
+    parser.add_option("-c", "--cascade", action="store", dest="cascade_filename",
+                      help="Sets the path to the Haar Cascade used for the face detection part [haarcascade_frontalface_alt2.xml].")
     (options, args) = parser.parse_args()
-    # Check if a model name was passed:
+    if options.cascade_filename is None:
+        print ">> Error: No cascade file was provded i.e. --cascade=/share/ocvfacerec/haarcascade_frontalface_alt2.xml"
+        sys.exit(1)
     if options.ros_source is None:
         print ">> Error: No ROS Topic provided use i.e. --ros-source=/usb_cam/image_raw"
         sys.exit(1)
