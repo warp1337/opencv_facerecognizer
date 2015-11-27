@@ -85,4 +85,4 @@ if _platform == "linux" or _platform == "linux2":
         copy_tree('../data', str(home) + "/ocvf_data/")
         print "Copying training data to: %s" % str(home) + "/etc/ocvf_data/"
     else:
-        pass
+        print "No raining data installed"
