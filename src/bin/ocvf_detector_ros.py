@@ -100,7 +100,7 @@ class Recognizer(object):
             return
         # Resize the frame to half the original size for speeding up the detection process.
         # In ROS we can control the size, so we are sending a 320*240 image by default.
-        img = cv2.resize(cv_image, (320, 240), interpolation=cv2.INTER_CUBIC)
+        img = cv2.resize(cv_image, (320, 240), interpolation=cv2.INTER_LINEAR)
         # img = cv2.resize(cv_image, (cv_image.shape[1] / 2, cv_image.shape[0] / 2), interpolation=cv2.INTER_CUBIC)
         # img = cv_image
         imgout = img.copy()
