@@ -73,6 +73,8 @@ setup(
     install_requires=['NumPy >=1.8.1', 'matplotlib >= 1.2.0'],
 )
 
+print "Now installing training and extra data"
+
 if _platform == "linux" or _platform == "linux2":
     if os.environ.get('prefix') is not None:
         prefix = os.getenv("prefix")
