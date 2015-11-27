@@ -133,8 +133,10 @@ class Recognizer(object):
             # Z is "mis-used" to represent the size of the bounding box
             point.z = x1 - x0
             msg.position = point
-            msg.name = str("unknown")
+            msg.name = str(_i)
             msg.reliability = 1.0
+            msg.tagnames = ["None"]
+            msg.tags = ["None"]
             persons.append(msg)
         if len(persons) > 0:
             h = Header()
