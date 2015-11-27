@@ -77,8 +77,6 @@ class Recognizer(object):
         self.rp = _rp
         self.doRun = True
         self.wait = _wait
-        self.restart = False
-        self.ros_restart_request = False
         self.detector = CascadedDetector(cascade_fn=cascade_filename, minNeighbors=5, scaleFactor=1.1)
         if run_local:
             print ">> Error: Run local selected in ROS based Recognizer"
@@ -100,29 +98,19 @@ class Recognizer(object):
             return
         # Resize the frame to half the original size for speeding up the detection process.
         # In ROS we can control the size, so we are sending a 320*240 image by default.
-        img = cv2.resize(cv_image, (320, 240), interpolation=cv2.INTER_LINEAR)
+        # img = cv2.resize(cv_image, (320, 240))
         # img = cv2.resize(cv_image, (cv_image.shape[1] / 2, cv_image.shape[0] / 2), interpolation=cv2.INTER_CUBIC)
-        # img = cv_image
-        imgout = img.copy()
+        img = cv_image
+        # imgout = cv_image
         # Remember the Persons found in current image
         persons = []
         for _i, r in enumerate(self.detector.detect(img)):
             x0, y0, x1, y1 = r
-            # (1) Get face, (2) Convert to grayscale & (3) resize to image_size:
-            face = img[y0:y1, x0:x1]
-            face = cv2.cvtColor(face, cv2.COLOR_BGR2GRAY)
-            # face = cv2.resize(face, self.model.image_size, interpolation=cv2.INTER_CUBIC)
-            # prediction = self.model.predict(face)
-            # predicted_label = prediction[0]
-            # classifier_output = prediction[1]
-            # Now let's get the distance from the assuming a 1-Nearest Neighbor.
-            # Since it's a 1-Nearest Neighbor only look take the zero-th element:
-            # distance = classifier_output['distances'][0]
+            # (1) Get face, (2) Convert to grayscale
+            # face = img[y0:y1, x0:x1]
+            # face = cv2.cvtColor(face, cv2.COLOR_BGR2GRAY)
             # Draw the face area in image:
-            cv2.rectangle(imgout, (x0, y0), (x1, y1), (0, 0, 255), 2)
-            # Draw the predicted name (folder name...):
-            # draw_str(imgout, (x0 - 20, y0 - 40), "Label " + self.model.subject_names[predicted_label])
-            # draw_str(imgout, (x0 - 20, y0 - 20), "Feature Distance " + "%1.1f" % distance)
+            cv2.rectangle(img, (x0, y0), (x1, y1), (0, 0, 255), 2)
             msg = Person()
             point = Point()
             # Send the center of the person's bounding box
@@ -147,38 +135,21 @@ class Recognizer(object):
             for p in persons:
                 msg.people.append(p)
             self.rp.publisher.publish(msg)
-        cv2.imshow('OCVFACEREC < ROS STREAM', imgout)
+        cv2.imshow('OCVFACEREC < ROS STREAM', img)
         cv2.waitKey(self.wait)
-
-        try:
-            z = self.ros_restart_request
-            if z:
-                self.restart = True
-                self.doRun = False
-        except Exception, e:
-            pass
-
-    def restart_callback(self, ros_data):
-        print ">> Received Restart Request"
-        if "restart" in str(ros_data):
-            self.ros_restart_request = True
 
     def run_distributed(self, image_topic):
         print ">> Activating ROS Subscriber"
         image_subscriber = rospy.Subscriber(image_topic, Image, self.image_callback, queue_size=1)
         # print ">> Recognizer is running"
         while self.doRun:
-            time.sleep(0.01)
+            time.sleep(0.02)
             pass
         # Important: You need to unregister before restarting!
         image_subscriber.unregister()
         print ">> Deactivating ROS Subscriber"
 
-
 if __name__ == '__main__':
-    # model.pkl is a pickled (hopefully trained) PredictableModel, which is
-    # used to make predictions. You can learn a model yourself by passing the
-    # parameter -d (or --dataset) to learn the model from a given dataset.
     usage = "Usage: %prog [options]"
     # Add options for training, resizing, validation and setting the camera id:
     parser = OptionParser(usage=usage)
