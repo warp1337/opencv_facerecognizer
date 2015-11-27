@@ -198,5 +198,5 @@ if __name__ == '__main__':
     # Init ROS People Publisher
     rp = RosPeople()
     start_new_thread(ros_spinning, ("None",))
-    x = Recognizer(cascade_filename=options.cascade_filename, run_local=False, rp=rp)
+    x = Recognizer(cascade_filename=options.cascade_filename, run_local=False, rp)
     x.run_distributed(str(options.ros_source))
