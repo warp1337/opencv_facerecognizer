@@ -73,9 +73,10 @@ def ros_spinning(message="None"):
 
 
 class Recognizer(object):
-    def __init__(self, cascade_filename, run_local, _rp):
+    def __init__(self, cascade_filename, run_local, _rp, _wait):
         self.rp = _rp
         self.doRun = True
+        self.wait = _wait
         self.restart = False
         self.ros_restart_request = False
         self.detector = CascadedDetector(cascade_fn=cascade_filename, minNeighbors=5, scaleFactor=1.1)
@@ -183,6 +184,8 @@ if __name__ == '__main__':
                       default="/usb_cam/image_raw")
     parser.add_option("-c", "--cascade", action="store", dest="cascade_filename",
                       help="Sets the path to the Haar Cascade used for the face detection part [haarcascade_frontalface_alt2.xml].")
+    parser.add_option("-w", "--wait", action="store", dest="wait_time", default=20, type="int",
+                      help="Amount of time (in ms) to sleep between face identification frames (default: %default).")
     (options, args) = parser.parse_args()
     if options.cascade_filename is None:
         print ">> Error: No cascade file was provded i.e. --cascade=/share/ocvfacerec/haarcascade_frontalface_alt2.xml"
@@ -198,5 +201,5 @@ if __name__ == '__main__':
     # Init ROS People Publisher
     rp = RosPeople()
     start_new_thread(ros_spinning, ("None",))
-    x = Recognizer(options.cascade_filename, False, rp)
+    x = Recognizer(options.cascade_filename, False, rp, options.wait_time)
     x.run_distributed(str(options.ros_source))
