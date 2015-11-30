@@ -138,7 +138,7 @@ class Recognizer(object):
                 msg.people.append(p)
             self.rp.publisher.publish(msg)
         cv2.imshow('OCVFACEREC < ROS STREAM', imgout)
-        cv2.waitKey(1)
+        cv2.waitKey(5)
 
     def run_distributed(self, image_topic):
         print ">> Activating ROS Subscriber"
