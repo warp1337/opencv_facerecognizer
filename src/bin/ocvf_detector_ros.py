@@ -70,13 +70,14 @@ class RosPeople:
 def ros_spinning(message="None"):
     print ">> ROS is spinning()"
     rospy.spin()
+    print ">> ROS stopped spinning()"
 
 
 class Recognizer(object):
-    def __init__(self, cascade_filename, run_local, _rp, _wait):
+    def __init__(self, cascade_filename, run_local, _rp):
         self.rp = _rp
         self.doRun = True
-        self.wait = _wait
+        # self.wait = _wait
         self.detector = CascadedDetector(cascade_fn=cascade_filename, minNeighbors=5, scaleFactor=1.1)
         if run_local:
             print ">> Error: Run local selected in ROS based Recognizer"
@@ -101,7 +102,6 @@ class Recognizer(object):
         # Resize the frame to half the original size for speeding up the detection process.
         # In ROS we can control the size, so we are sending a 320*240 image by default.
         img = cv2.resize(cv_image, (320, 240), interpolation=cv2.INTER_LINEAR)
-        # img = cv2.resize(cv_image, (cv_image.shape[1] / 2, cv_image.shape[0] / 2), interpolation=cv2.INTER_CUBIC)
         # img = cv_image
         imgout = img.copy()
         # Remember the Persons found in current image
@@ -138,7 +138,7 @@ class Recognizer(object):
                 msg.people.append(p)
             self.rp.publisher.publish(msg)
         cv2.imshow('OCVFACEREC < ROS STREAM', imgout)
-        cv2.waitKey(self.wait)
+        cv2.waitKey(1)
 
     def run_distributed(self, image_topic):
         print ">> Activating ROS Subscriber"
@@ -159,8 +159,8 @@ if __name__ == '__main__':
                       default="/usb_cam/image_raw")
     parser.add_option("-c", "--cascade", action="store", dest="cascade_filename",
                       help="Sets the path to the Haar Cascade used for the face detection part [haarcascade_frontalface_alt2.xml].")
-    parser.add_option("-w", "--wait", action="store", dest="wait_time", default=20, type="int",
-                      help="Amount of time (in ms) to sleep between face identification frames (default: %default).")
+    #parser.add_option("-w", "--wait", action="store", dest="wait_time", default=20, type="int",
+    #                  help="Amount of time (in ms) to sleep between face identification frames (default: %default).")
     (options, args) = parser.parse_args()
     if options.cascade_filename is None:
         print ">> Error: No cascade file was provded i.e. --cascade=/share/ocvfacerec/haarcascade_frontalface_alt2.xml"
@@ -176,5 +176,5 @@ if __name__ == '__main__':
     # Init ROS People Publisher
     rp = RosPeople()
     start_new_thread(ros_spinning, ("None",))
-    x = Recognizer(options.cascade_filename, False, rp, options.wait_time)
+    x = Recognizer(options.cascade_filename, False, rp)
     x.run_distributed(str(options.ros_source))
