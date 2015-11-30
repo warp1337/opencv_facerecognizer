@@ -142,7 +142,7 @@ class Recognizer(object):
 
     def run_distributed(self, image_topic):
         print ">> Activating ROS Subscriber"
-        image_subscriber = rospy.Subscriber(image_topic, Image, self.image_callback, queue_size=5)
+        image_subscriber = rospy.Subscriber(image_topic, Image, self.image_callback, queue_size=1)
         # print ">> Recognizer is running"
         while self.doRun:
             time.sleep(1)
