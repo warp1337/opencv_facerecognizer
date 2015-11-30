@@ -159,7 +159,7 @@ if __name__ == '__main__':
                       default="/usb_cam/image_raw")
     parser.add_option("-c", "--cascade", action="store", dest="cascade_filename",
                       help="Sets the path to the Haar Cascade used for the face detection part [haarcascade_frontalface_alt2.xml].")
-    #parser.add_option("-w", "--wait", action="store", dest="wait_time", default=20, type="int",
+    # parser.add_option("-w", "--wait", action="store", dest="wait_time", default=20, type="int",
     #                  help="Amount of time (in ms) to sleep between face identification frames (default: %default).")
     (options, args) = parser.parse_args()
     if options.cascade_filename is None:
