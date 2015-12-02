@@ -116,8 +116,8 @@ class Recognizer(object):
             msg = Person()
             point = Point()
             # Send the center of the person's bounding box
-            mid_x = float(x1 + (x1 - x0) * 0.5)
-            mid_y = float(y1 + (y1 - y0) * 0.5)
+            mid_x = (x0 + x1)/2  # float(x1 + (x1 - x0) * 0.5)
+            mid_y = (y0 + y1)/2  # float(y1 + (y1 - y0) * 0.5)
             point.x = mid_x
             point.y = mid_y
             # Z is "mis-used" to represent the size of the bounding box
