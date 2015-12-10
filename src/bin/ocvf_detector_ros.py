@@ -92,6 +92,9 @@ class Recognizer(object):
         signal.signal(signal.SIGINT, signal_handler)
 
     def image_callback(self, ros_data):
+
+        send_time = ros_data.header.stamp
+
         try:
             cv_image = self.bridge.imgmsg_to_cv2(ros_data, "bgr8")
         except Exception, ex:
@@ -106,6 +109,7 @@ class Recognizer(object):
         imgout = img.copy()
         # Remember the Persons found in current image
         persons = []
+
         for _i, r in enumerate(self.detector.detect(img)):
             x0, y0, x1, y1 = r
             # (1) Get face, (2) Convert to grayscale
@@ -122,6 +126,7 @@ class Recognizer(object):
             point.y = mid_y
             # Z is "mis-used" to represent the size of the bounding box
             point.z = x1 - x0
+            msg.header.stamp = send_time
             msg.position = point
             msg.name = str(_i)
             msg.reliability = 1.0
