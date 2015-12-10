@@ -67,15 +67,22 @@ setup(
               'ocvfacerec/trainer', 'ocvfacerec/mwconnector'],
     scripts=["bin/ocvf_recognizer.py", "bin/ocvf_recognizer_ros.py", "bin/ocvf_recognizer_rsb.py",
              "bin/ocvf_interactive_trainer.py", "bin/ocvf_retrain_rsb.py", "bin/ocvf_retrain_ros.py",
-             "bin/ocvf_image_publisher_ros.py"],
+             "bin/ocvf_image_publisher_ros.py", "bin/ocvf_detector_ros.py"],
     # Due to heavy dependencies (liblas, ATLAS, etc..) it is easier to install 'SciPy >= 0.14.0'
     # and PIL >= 1.1.7 using your Package Manager, i.e., sudo apt-get install python-scipy python-imaging-*
     install_requires=['NumPy >=1.8.1', 'matplotlib >= 1.2.0'],
 )
 
+print "Now installing training and extra data..."
+
 if _platform == "linux" or _platform == "linux2":
-    if os.path.isdir("../data"):
+    if os.getenv("prefix") is not None:
+        prefix = os.getenv("prefix")
+        copy_tree('../data', str(prefix) + "/etc/ocvf_data/")
+        print "Copying training data to: %s" % str(prefix) + "/etc/ocvf_data/"
+    elif os.path.isdir("../data"):
         home = os.getenv("HOME")
         copy_tree('../data', str(home) + "/ocvf_data/")
+        print "Copying training data to: %s" % str(home) + "/etc/ocvf_data/"
     else:
-        pass
+        print "No training data installed"
