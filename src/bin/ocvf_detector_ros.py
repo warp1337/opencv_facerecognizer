@@ -126,7 +126,7 @@ class Recognizer(object):
             point.y = mid_y
             # Z is "mis-used" to represent the size of the bounding box
             point.z = x1 - x0
-            msg.header.stamp = send_time
+            #msg.header.stamp = send_time
             msg.position = point
             msg.name = str(_i)
             msg.reliability = 1.0
@@ -135,7 +135,7 @@ class Recognizer(object):
             persons.append(msg)
         if len(persons) > 0:
             h = Header()
-            h.stamp = rospy.Time.now()
+            h.stamp = send_time
             h.frame_id = '/ros_cam'
             msg = People()
             msg.header = h
